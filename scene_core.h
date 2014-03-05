@@ -43,20 +43,6 @@ private:
     QPointF prev_pos;
 };
 
-class ChartScene : public QGraphicsScene {
-    Q_OBJECT
-public:
-    using QGraphicsScene::QGraphicsScene;
-    bool addBlockFile(QString filename = 0);
-    QStringList blockTypes() const;
-public slots:
-    bool addBlock(const QString& block_name);
-protected:
-    virtual void drawBackground(QPainter* painter, const QRectF& rect);
-private:
-    QLinkedList<QDomDocument> block_documents;
-};
-
 class ElevProxyWidget : public QGraphicsProxyWidget {
     Q_OBJECT
 public:

@@ -1,6 +1,7 @@
 #include <QApplication>
 #include <QtXml>
 #include "scene_core.h"
+#include "chartscene.h"
 
 int main(int argc, char** argv) {
     QApplication app(argc, argv);
@@ -15,7 +16,7 @@ int main(int argc, char** argv) {
     QToolBar* m_toolbar = new QToolBar;
     QComboBox* m_combobox = new QComboBox();
     m_combobox->addItems(m_scene->blockTypes());
-    QObject::connect(m_combobox, SIGNAL(activated(const QString &)), m_scene, SLOT(addBlock(const QString&)));
+    QObject::connect(m_combobox, SIGNAL(activated(const QString &)), m_scene, SLOT(addBlockItem(const QString&)));
     m_toolbar->addWidget(m_combobox);
     
     QLayout* m_root_layout = new QVBoxLayout;

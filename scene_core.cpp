@@ -276,68 +276,6 @@ QVector<QPointF> BlockItem::getXmlPoints(QDomElement elem, uint num_points) {
 }
 //END
 
-//BEGIN ChartScene
-bool ChartScene::addBlockFile(QString filename) {
-    if (!filename.length()) {
-        filename = QFileDialog::getOpenFileName(NULL, "Open File", "", "XML Files (*.xml)");
-    }
-    QFile file(filename);
-    QDomDocument doc;
-    if (!file.open(QIODevice::ReadOnly)) {
-        qDebug() << "Not opened!";
-        return false;
-    }
-    file.open(QIODevice::ReadOnly);
-    QString error;
-    if (!doc.setContent(&file, &error)) {
-        qDebug() << "Not set!: " << error;
-        file.close();
-        return false;
-    }
-    block_documents.append(doc);
-    file.close();
-    return true;
-}
-
-QStringList ChartScene::blockTypes() const {
-    QDomElement block_elem;
-    QStringList block_types;
-    foreach (QDomDocument doc, block_documents) {
-        block_elem = doc.documentElement().firstChildElement("block");
-        while (!block_elem.isNull()) {
-            block_types.append(block_elem.attribute("name"));
-            block_elem = block_elem.nextSiblingElement("block");
-        }
-    }
-    return block_types;
-}
-
-bool ChartScene::addBlock(const QString& block_name) {
-    QDomElement block_elem;
-    foreach (QDomDocument doc, block_documents) {
-        block_elem = doc.documentElement().firstChildElement("block");
-        while (!block_elem.isNull()) {
-            if (block_elem.attribute("name") == block_name) {
-                addItem(new BlockItem(QPoint(0,0), block_elem));
-                return true;
-            }
-            block_elem = block_elem.nextSiblingElement("block");
-        }
-    }
-    return false;
-}
-
-void ChartScene::drawBackground(QPainter* painter, const QRectF& rect) {
-    QGraphicsScene::drawBackground(painter, rect);
-    for (int ix = rect.left() - (int) rect.left() % 20; ix <= rect.right(); ix += 20) {
-        painter->drawLine(ix, rect.top(), ix, rect.bottom());
-    }
-    for (int iy = rect.top() - (int) rect.top() % 20; iy <= rect.bottom(); iy += 20) {
-        painter->drawLine(rect.left(), iy, rect.right(), iy);
-    }
-}
-//END ChartScene
-
 //BEGIN ElevProxyWidget
 void ElevProxyWidget::hoverEnterEvent(QGraphicsSceneHoverEvent* event) {
     QGraphicsProxyWidget::hoverEnterEvent(event);
