@@ -8,10 +8,15 @@ int main(int argc, char** argv) {
     
     ChartScene* m_scene = new ChartScene(-600, -300, 1200, 600);
     QGraphicsView* m_view = new QGraphicsView(m_scene);
-    //m_view->setRenderHint(QPainter::Antialiasing);
+    m_view->setRenderHint(QPainter::Antialiasing);
     m_scene->setBackgroundBrush(Qt::lightGray);
-    
-    qDebug() << m_scene->addBlockFile();
+
+    QStringList arguments = app.arguments();
+    if (arguments.size() > 1) {
+        for (int i = 1; i!= arguments.size(); ++i) {
+            m_scene->addBlockFile(arguments[i]);
+        }
+    } else m_scene->addBlockFile();
     
     QToolBar* m_toolbar = new QToolBar;
     QComboBox* m_combobox = new QComboBox();
