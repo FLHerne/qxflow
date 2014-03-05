@@ -1,5 +1,6 @@
-#include "scene_core.h"
+#include "chartscene.h"
 #include "extra_items.h"
+#include "scene_core.h"
 
 //BEGIN LinkNodeItem
 //Public
@@ -11,8 +12,11 @@ LinkNodeItem::LinkNodeItem(int in_x, int in_y, QGraphicsItem* parent):
 }
 
 QPoint LinkNodeItem::gridSnapOffset() const {
-    QPointF center = scenePos() + QPointF(radius, radius);
-    return QPoint(roundTo(center.x(), 20) - center.x(), roundTo(center.y(), 20) - center.y());
+    if (ChartScene* chart_scene = dynamic_cast<ChartScene*>(scene())) {
+        int grid_size = chart_scene->gridSize();
+        QPointF center = scenePos() + QPointF(radius, radius);
+        return QPoint(roundTo(center.x(), grid_size) - center.x(), roundTo(center.y(), grid_size) - center.y());
+    } else return QPoint();
 }
 
 void LinkNodeItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) {
