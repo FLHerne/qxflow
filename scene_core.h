@@ -37,6 +37,8 @@ protected:
     void updateShape(const QGraphicsItem* in_item = 0) const;
 private:
     QVector<QPointF> getXmlPoints(QDomElement elem, uint num_points);
+    void addXmlText(QDomElement elem);
+    void addXmlWidgetRow(QDomElement elem);
     mutable QPainterPath shape_path;
     mutable bool shape_outdated = false;
     QList<LinkNodeItem*> link_nodes;

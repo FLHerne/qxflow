@@ -87,77 +87,9 @@ BlockItem::BlockItem(QPointF in_pos, QDomElement in_elem, QGraphicsItem* parent,
             if (corners.size()) new_shape_item = new QGraphicsPolygonItem(corners, this);
             else qDebug() << "Invalid poly";
         } else if (tag_name == "text") {
-            QVector<QPointF> corners = getXmlPoints(cur_elem, 1);
-            if (corners.size()) {
-                QStringList font_styles;
-                QColor font_color("black");
-                int font_size = 12;
-                sub_elem = cur_elem.firstChildElement("font");
-                if (!sub_elem.isNull()) {
-                    font_styles = sub_elem.attribute("style").split(',');
-                    if (sub_elem.hasAttribute("color"))
-                        font_color = QColor(sub_elem.attribute("color"));
-                    if (sub_elem.hasAttribute("size"))
-                        font_size = sub_elem.attribute("size").toInt();
-                }
-                QFont text_font;
-                text_font.setPixelSize(font_size);
-                if (font_styles.contains("bold")) text_font.setBold(true);
-                if (font_styles.contains("italic")) text_font.setItalic(true);
-                if (font_styles.contains("underline")) text_font.setUnderline(true);
-                if (cur_elem.attribute("editable") == "true") {
-                    QGraphicsTextItem* text_item = new QGraphicsTextItem(cur_elem.attribute("text"), this);
-                    text_item->setTextInteractionFlags(Qt::TextEditorInteraction);
-                    text_item->setFont(text_font);
-                    text_item->setDefaultTextColor(font_color);
-                    new_item = text_item;
-                } else {
-                    QGraphicsSimpleTextItem* stext_item = new QGraphicsSimpleTextItem(cur_elem.attribute("text"), this);
-                    stext_item->setFont(text_font);
-                    stext_item->setBrush(font_color);
-                    new_item = stext_item;
-                }
-                if (cur_elem.attribute("centered") == "true") {
-                    new_item->setPos(corners[0] - new_item->boundingRect().center());
-                } else new_item->setPos(corners[0]);
-            } else qDebug() << "Invalid text";
+            addXmlText(cur_elem);
         } else if (tag_name == "widgetrow") {
-            QVector<QPointF> corners = getXmlPoints(cur_elem, 2);
-            if (corners.size()) {
-                QGraphicsLinearLayout* row_layout = new QGraphicsLinearLayout;
-                row_layout->setSpacing(0);
-                row_layout->setContentsMargins(1,1,1,1);
-                row_layout->addStretch();
-                QGraphicsWidget* row_widget = new QGraphicsWidget(this);
-                row_widget->setPos(corners[0]);
-                row_widget->setMaximumSize(corners[1].x() - corners[0].x(), corners[1].y() - corners[0].y());
-                row_widget->setMinimumWidth(corners[1].x() - corners[0].x());
-                row_widget->setLayout(row_layout);
-                row_widget->setZValue(0.5);
-                QGraphicsProxyWidget* new_proxy;
-                sub_elem = cur_elem.firstChildElement();
-                while (!sub_elem.isNull()) {
-                    if (sub_elem.tagName() == "palette") {
-                        row_widget->setPalette(QPalette(QColor(sub_elem.attribute("button"))));
-                    } else if (sub_elem.tagName() == "label") {
-                        new_proxy = new QGraphicsProxyWidget;
-                        new_proxy->setWidget(new QLabel(sub_elem.attribute("text")));
-                        row_layout->addItem(new_proxy);
-                    } else if (sub_elem.tagName() == "lineedit") {
-                        new_proxy = new QGraphicsProxyWidget;
-                        new_proxy->setWidget(new QLineEdit(sub_elem.attribute("text")));
-                        row_layout->addItem(new_proxy);
-                    } else if (sub_elem.tagName() == "combobox") {
-                        QComboBox* new_combobox = new QComboBox;
-                        new_combobox->addItems(sub_elem.attribute("items").split(','));
-                        new_proxy = new ElevProxyWidget;
-                        new_proxy->setWidget(new_combobox);
-                        row_layout->addItem(new_proxy);
-                    }
-                    sub_elem = sub_elem.nextSiblingElement();
-                }
-                row_layout->addStretch();
-            } else qDebug() << "Invalid widgetrow";
+            addXmlWidgetRow(cur_elem);
         } else {
             qDebug() << "Not a thing!";
         }
@@ -278,6 +210,84 @@ QVector<QPointF> BlockItem::getXmlPoints(QDomElement elem, uint num_points) {
     if (!valid) points.clear(); //Return an empty vector if points invalid.
     return points;
 }
+
+void BlockItem::addXmlText(QDomElement elem) {
+    QVector<QPointF> corners = getXmlPoints(elem, 1);
+    if (corners.size()) {
+        QStringList font_styles;
+        QColor font_color("black");
+        int font_size = 12;
+        QDomElement sub_elem = elem.firstChildElement("font");
+        if (!sub_elem.isNull()) {
+            font_styles = sub_elem.attribute("style").split(',');
+            if (sub_elem.hasAttribute("color"))
+                font_color = QColor(sub_elem.attribute("color"));
+            if (sub_elem.hasAttribute("size"))
+                font_size = sub_elem.attribute("size").toInt();
+        }
+        QFont text_font;
+        text_font.setPixelSize(font_size);
+        if (font_styles.contains("bold")) text_font.setBold(true);
+        if (font_styles.contains("italic")) text_font.setItalic(true);
+        if (font_styles.contains("underline")) text_font.setUnderline(true);
+        QGraphicsItem* new_item;
+        if (elem.attribute("editable") == "true") {
+            QGraphicsTextItem* text_item = new QGraphicsTextItem(elem.attribute("text"), this);
+            text_item->setTextInteractionFlags(Qt::TextEditorInteraction);
+            text_item->setFont(text_font);
+            text_item->setDefaultTextColor(font_color);
+            new_item = text_item;
+        } else {
+            QGraphicsSimpleTextItem* stext_item = new QGraphicsSimpleTextItem(elem.attribute("text"), this);
+            stext_item->setFont(text_font);
+            stext_item->setBrush(font_color);
+            new_item = stext_item;
+        }
+        if (elem.attribute("centered") == "true") {
+            new_item->setPos(corners[0] - new_item->boundingRect().center());
+        } else new_item->setPos(corners[0]);
+    } else qDebug() << "Invalid text";
+}
+
+void BlockItem::addXmlWidgetRow(QDomElement elem) {
+    QVector<QPointF> corners = getXmlPoints(elem, 2);
+    if (corners.size()) {
+        QGraphicsLinearLayout* row_layout = new QGraphicsLinearLayout;
+        row_layout->setSpacing(0);
+        row_layout->setContentsMargins(1,1,1,1);
+        row_layout->addStretch();
+        QGraphicsWidget* row_widget = new QGraphicsWidget(this);
+        row_widget->setPos(corners[0]);
+        row_widget->setMaximumSize(corners[1].x() - corners[0].x(), corners[1].y() - corners[0].y());
+        row_widget->setMinimumWidth(corners[1].x() - corners[0].x());
+        row_widget->setLayout(row_layout);
+        row_widget->setZValue(0.5);
+        QGraphicsProxyWidget* new_proxy;
+        QDomElement sub_elem = elem.firstChildElement();
+        while (!sub_elem.isNull()) {
+            if (sub_elem.tagName() == "palette") {
+                row_widget->setPalette(QPalette(QColor(sub_elem.attribute("button"))));
+            } else if (sub_elem.tagName() == "label") {
+                new_proxy = new QGraphicsProxyWidget;
+                new_proxy->setWidget(new QLabel(sub_elem.attribute("text")));
+                row_layout->addItem(new_proxy);
+            } else if (sub_elem.tagName() == "lineedit") {
+                new_proxy = new QGraphicsProxyWidget;
+                new_proxy->setWidget(new QLineEdit(sub_elem.attribute("text")));
+                row_layout->addItem(new_proxy);
+            } else if (sub_elem.tagName() == "combobox") {
+                QComboBox* new_combobox = new QComboBox;
+                new_combobox->addItems(sub_elem.attribute("items").split(','));
+                new_proxy = new ElevProxyWidget;
+                new_proxy->setWidget(new_combobox);
+                row_layout->addItem(new_proxy);
+            }
+            sub_elem = sub_elem.nextSiblingElement();
+        }
+        row_layout->addStretch();
+    } else qDebug() << "Invalid widgetrow";
+}
+
 //END
 
 //BEGIN ElevProxyWidget
