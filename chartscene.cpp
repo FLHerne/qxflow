@@ -63,10 +63,12 @@ bool ChartScene::addBlockItem(const QString& block_type) {
 //Protected
 void ChartScene::drawBackground(QPainter* painter, const QRectF& rect) {
     QGraphicsScene::drawBackground(painter, rect);
-    for (int ix = rect.left() - (int) rect.left() % 20; ix <= rect.right(); ix += 20) {
+    //Find the smallest multiple of grid_size in the displayed area,
+    //...then draw lines every grid_size. Same vertically from top.
+    for (int ix = rect.left() - (int) rect.left() % grid_size; ix <= rect.right(); ix += grid_size) {
         painter->drawLine(ix, rect.top(), ix, rect.bottom());
     }
-    for (int iy = rect.top() - (int) rect.top() % 20; iy <= rect.bottom(); iy += 20) {
+    for (int iy = rect.top() - (int) rect.top() % grid_size; iy <= rect.bottom(); iy += grid_size) {
         painter->drawLine(rect.left(), iy, rect.right(), iy);
     }
 }
