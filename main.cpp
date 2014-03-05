@@ -10,7 +10,7 @@ int main(int argc, char** argv) {
     //m_view->setRenderHint(QPainter::Antialiasing);
     m_scene->setBackgroundBrush(Qt::lightGray);
     
-    qDebug() << m_scene->addBlockFile("../items.xml");
+    qDebug() << m_scene->addBlockFile();
     
     QToolBar* m_toolbar = new QToolBar;
     QComboBox* m_combobox = new QComboBox();

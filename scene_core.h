@@ -47,7 +47,7 @@ class ChartScene : public QGraphicsScene {
     Q_OBJECT
 public:
     using QGraphicsScene::QGraphicsScene;
-    bool addBlockFile(const QString& filename);
+    bool addBlockFile(QString filename = 0);
     QStringList blockTypes() const;
 public slots:
     bool addBlock(const QString& block_name);

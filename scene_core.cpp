@@ -277,7 +277,10 @@ QVector<QPointF> BlockItem::getXmlPoints(QDomElement elem, uint num_points) {
 //END
 
 //BEGIN ChartScene
-bool ChartScene::addBlockFile(const QString& filename) {
+bool ChartScene::addBlockFile(QString filename) {
+    if (!filename.length()) {
+        filename = QFileDialog::getOpenFileName(NULL, "Open File", "", "XML Files (*.xml)");
+    }
     QFile file(filename);
     QDomDocument doc;
     if (!file.open(QIODevice::ReadOnly)) {
