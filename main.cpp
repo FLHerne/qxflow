@@ -1,7 +1,6 @@
 #include <QApplication>
-#include <QtXml>
-#include "scene_core.h"
 #include "chartscene.h"
+#include "scene_core.h"
 
 int main(int argc, char** argv) {
     QApplication app(argc, argv);
