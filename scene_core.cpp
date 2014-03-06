@@ -51,7 +51,7 @@ void LinkNodeItem::mousePressEvent(QGraphicsSceneMouseEvent* event) {
             }
             last_corner = sceneCenter();
         } else {
-            endCursorLine();
+            nextCursorLine();
             last_corner = roundTo(event->scenePos(), grid_size);
         }
     }
@@ -68,7 +68,7 @@ void LinkNodeItem::mouseReleaseEvent(QGraphicsSceneMouseEvent* event) {
     if (event->button() == Qt::RightButton) {
         event->accept();
         ungrabMouse();
-        endCursorLine();
+        nextCursorLine();
         foreach (QGraphicsLineItem* line, line_segments) {
             delete line;
         }
@@ -98,12 +98,25 @@ void LinkNodeItem::drawCursorLine(const QPointF& to_point) {
     if (x_line) delete x_line;
     if (y_line) delete y_line;
     QPointF event_grid_pos = roundTo(to_point, grid_size);
-    QPointF corner_pos = x_first ? QPointF(event_grid_pos.x(), last_corner.y()) : QPointF(last_corner.x(), event_grid_pos.y());
-    x_line = scene()->addLine(QLineF(last_corner, corner_pos));
-    y_line = scene()->addLine(QLineF(event_grid_pos, corner_pos));
+    QPointF corner_pos;
+    if (x_first) {
+        corner_pos = QPointF(event_grid_pos.x(), last_corner.y());
+        x_line = scene()->addLine(QLineF(last_corner, corner_pos));
+        y_line = scene()->addLine(QLineF(corner_pos, event_grid_pos));
+    } else {
+        corner_pos = QPointF(last_corner.x(), event_grid_pos.y());
+        x_line = scene()->addLine(QLineF(event_grid_pos, corner_pos));
+        y_line = scene()->addLine(QLineF(corner_pos, last_corner));
+    }
+    for (int ix = x_line->boundingRect().left(); ix <= x_line->boundingRect().right(); ix += grid_size) {
+        new LinkNodeItem(ix, x_line->boundingRect().top(), x_line);
+    }
+    for (int iy = y_line->boundingRect().top(); iy <= y_line->boundingRect().bottom(); iy += grid_size) {
+        new LinkNodeItem(y_line->boundingRect().left(), iy, y_line);
+    }
 }
 
-void LinkNodeItem::endCursorLine() {
+void LinkNodeItem::nextCursorLine() {
     line_segments.append(x_line);
     x_line = NULL;
     line_segments.append(y_line);

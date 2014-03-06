@@ -23,7 +23,7 @@ private:
     //TODO: Make it work when scaled!
     QPointF sceneCenter() const { return scenePos() + QPointF(radius, radius); }
     void drawCursorLine(const QPointF& to_point);
-    void endCursorLine();
+    void nextCursorLine();
     static constexpr float radius = 4.5;
     bool x_first = true;
     int grid_size = 0;
