@@ -7,7 +7,7 @@
 class LinkNodeItem : public QGraphicsEllipseItem {
 public:
     LinkNodeItem(int in_x, int in_y, QGraphicsItem* parent);
-    QPoint gridSnapOffset() const;
+    QPointF gridSnapOffset() const;
     virtual void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget = 0);
     enum { Type = UserType + 101 };
     virtual int type() const { return Type; }

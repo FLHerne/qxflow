@@ -14,9 +14,9 @@ LinkNodeItem::LinkNodeItem(int in_x, int in_y, QGraphicsItem* parent):
 }
 
 //Public
-QPoint LinkNodeItem::gridSnapOffset() const {
+QPointF LinkNodeItem::gridSnapOffset() const {
     if (ChartScene* chart_scene = dynamic_cast<ChartScene*>(scene())) {
-        return roundTo(sceneCenter(), chart_scene->gridSize()) - sceneCenter().toPoint();
+        return roundTo(sceneCenter(), chart_scene->gridSize()) - sceneCenter();
     } else return QPoint();
 }
 
