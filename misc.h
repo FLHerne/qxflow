@@ -1,8 +1,10 @@
 #ifndef MISC_H
 #define MISC_H
-#include <QObject>
+#include <QPointF>
 
-//Round 'in_val' up or down to the nearest multiple of 'step'.
+//Round 'in_val' up or down to nearest multiple of 'step'.
 int roundTo(float in_val, int step);
+//Round x and y values of 'in_point' to nearest multiple of 'step'.
+QPoint roundTo(const QPointF&, int step);
 
 #endif //MISC_H
