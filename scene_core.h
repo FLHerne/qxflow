@@ -19,6 +19,7 @@ protected:
     virtual void wheelEvent(QGraphicsSceneWheelEvent* event);
     virtual QVariant itemChange(GraphicsItemChange change, const QVariant& value);
 private:
+    bool highlighted = false;
     //Center of the item in scene coords. Will break if scaled.
     //TODO: Make it work when scaled!
     QPointF sceneCenter() const { return scenePos() + QPointF(radius, radius); }
