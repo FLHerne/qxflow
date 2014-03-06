@@ -23,7 +23,7 @@ public:
     BlockItem(QPointF in_pos, QGraphicsItem* parent = 0, QGraphicsScene* scene = 0);
     BlockItem(QPointF in_pos, QDomElement in_elem, QGraphicsItem* parent = 0, QGraphicsScene* scene = 0);
     void addLinkNode(int in_x, int in_y);
-    virtual QRectF boundingRect() const { return shape().boundingRect(); }
+    virtual QRectF boundingRect() const { return bounding_rect; }
     virtual QPainterPath shape() const;
     virtual void paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget* = 0) {
 //         painter->strokePath(shape_path, QPen(Qt::red, 4));
@@ -40,6 +40,7 @@ private:
     QVector<QPointF> getXmlPoints(QDomElement elem, uint num_points);
     void addXmlText(QDomElement elem);
     void addXmlWidgetRow(QDomElement elem);
+    mutable QRectF bounding_rect;
     mutable QPainterPath shape_path;
     mutable bool shape_outdated = false;
     QList<LinkNodeItem*> link_nodes;

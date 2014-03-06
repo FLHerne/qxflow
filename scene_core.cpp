@@ -7,6 +7,7 @@
 //Public
 LinkNodeItem::LinkNodeItem(int in_x, int in_y, QGraphicsItem* parent):
     QGraphicsEllipseItem(0, 0, radius * 2, radius * 2, parent) {
+    setCacheMode(DeviceCoordinateCache);
     setPos(in_x - radius, in_y - radius);
     setZValue(1);
     setBrush(Qt::yellow);
@@ -24,8 +25,11 @@ QPoint LinkNodeItem::gridSnapOffset() const {
 void LinkNodeItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) {
     setBrush(Qt::yellow);
     const QGraphicsItem* cur_item;
+    const LinkNodeItem* cur_node;
     foreach (cur_item, collidingItems(Qt::IntersectsItemBoundingRect)) {
-        if (qgraphicsitem_cast<const LinkNodeItem*>(cur_item)) {
+        if (cur_node = qgraphicsitem_cast<const LinkNodeItem*>(cur_item)) {
+            //Update any overlapping nodes, not just this one.
+            const_cast<LinkNodeItem*>(cur_node)->update();
             setBrush(Qt::blue);
             break;
         }
@@ -38,7 +42,7 @@ void LinkNodeItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* opti
 //Public
 BlockItem::BlockItem(QPointF in_pos, QGraphicsItem* parent, QGraphicsScene* scene):
     QGraphicsItem(parent, scene) {
-    setFlags(ItemIsMovable | ItemIsSelectable | ItemHasNoContents);
+    setFlags(ItemIsMovable | ItemIsSelectable | ItemSendsScenePositionChanges | ItemHasNoContents);
     setPos(in_pos);
     gridAlign();
 }
@@ -139,6 +143,10 @@ QVariant BlockItem::itemChange(QGraphicsItem::GraphicsItemChange change, const Q
     case ItemSceneHasChanged:
         gridAlign();
         break;
+    case ItemScenePositionHasChanged:
+        foreach(LinkNodeItem* cur_node, link_nodes) {
+            cur_node->update();
+        }
     }
     return QGraphicsItem::itemChange(change, value);
 }
@@ -191,6 +199,8 @@ void BlockItem::updateShape(const QGraphicsItem* in_item) const {
             }
         }
     }
+    bounding_rect = shape_path.boundingRect();
+    shape_outdated = false;
 }
 
 //Private
