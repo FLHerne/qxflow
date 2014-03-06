@@ -12,6 +12,7 @@ public:
     enum { Type = UserType + 101 };
     virtual int type() const { return Type; }
 private:
+    bool highlighted = false;
     //Center of the item in scene coords. Will break if scaled.
     //TODO: Make it work when scaled!
     QPointF sceneCenter() const { return scenePos() + QPointF(radius, radius); }

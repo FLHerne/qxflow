@@ -28,7 +28,9 @@ void LinkNodeItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* opti
     foreach (cur_item, collidingItems(Qt::IntersectsItemBoundingRect)) {
         if (cur_node = qgraphicsitem_cast<const LinkNodeItem*>(cur_item)) {
             //Update any overlapping nodes, not just this one.
-            const_cast<LinkNodeItem*>(cur_node)->update();
+            if (!cur_node->highlighted)
+                const_cast<LinkNodeItem*>(cur_node)->update();
+            highlighted = true;
             setBrush(Qt::blue);
             break;
         }
