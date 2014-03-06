@@ -14,10 +14,9 @@ LinkNodeItem::LinkNodeItem(int in_x, int in_y, QGraphicsItem* parent):
 }
 
 //Public
-QPoint LinkNodeItem::gridSnapOffset() const {
-    if (ChartScene* chart_scene = dynamic_cast<ChartScene*>(scene())) {
-        return roundTo(sceneCenter(), chart_scene->gridSize()) - sceneCenter().toPoint();
-    } else return QPoint();
+QPointF LinkNodeItem::gridSnapOffset() const {
+    if (grid_size) return roundTo(sceneCenter(), grid_size) - sceneCenter();
+    else return QPointF();
 }
 
 void LinkNodeItem::setCenterPos(const QPointF &pos) {
@@ -44,34 +43,71 @@ void LinkNodeItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* opti
 void LinkNodeItem::mousePressEvent(QGraphicsSceneMouseEvent* event) {
     if (event->button() == Qt::LeftButton) {
         event->accept();
-        if (!line_segments.size()) {
+        if (!drawing) {
+            drawing = true;
             grabMouse();
             foreach(QWidget* view, scene()->views()) {
                 view->setMouseTracking(true);
             }
             last_corner = sceneCenter();
-        } else last_corner = event->scenePos();
-        line_segments.append(scene()->addLine(QLineF(last_corner, event->scenePos())));
+        } else {
+            endCursorLine();
+            last_corner = roundTo(event->scenePos(), grid_size);
+        }
     }
 }
 
 //Protected virtual
 void LinkNodeItem::mouseMoveEvent(QGraphicsSceneMouseEvent* event) {
     event->accept();
-    if (line_segments.size()) {
-        line_segments.last()->setLine(QLineF(last_corner, event->scenePos()));
-    }
+    drawCursorLine(event->scenePos());
 }
 
+//Protected virtual
 void LinkNodeItem::mouseReleaseEvent(QGraphicsSceneMouseEvent* event) {
     if (event->button() == Qt::RightButton) {
         event->accept();
         ungrabMouse();
+        endCursorLine();
         foreach (QGraphicsLineItem* line, line_segments) {
             delete line;
         }
         line_segments.clear();
+        drawing = false;
     }
+}
+
+//Protected virtual
+void LinkNodeItem::wheelEvent(QGraphicsSceneWheelEvent* event) {
+    event->accept();
+    x_first = !x_first;
+    drawCursorLine(event->scenePos());
+}
+
+//Protected virtual
+QVariant LinkNodeItem::itemChange(QGraphicsItem::GraphicsItemChange change, const QVariant& value) {
+    if (change == ItemSceneHasChanged) {
+        if (ChartScene* chart_scene = dynamic_cast<ChartScene*>(scene())) {
+            grid_size = chart_scene->gridSize();
+        } else grid_size = 0;
+    }
+    return QGraphicsItem::itemChange(change, value);
+}
+
+void LinkNodeItem::drawCursorLine(const QPointF& to_point) {
+    if (x_line) delete x_line;
+    if (y_line) delete y_line;
+    QPointF event_grid_pos = roundTo(to_point, grid_size);
+    QPointF corner_pos = x_first ? QPointF(event_grid_pos.x(), last_corner.y()) : QPointF(last_corner.x(), event_grid_pos.y());
+    x_line = scene()->addLine(QLineF(last_corner, corner_pos));
+    y_line = scene()->addLine(QLineF(event_grid_pos, corner_pos));
+}
+
+void LinkNodeItem::endCursorLine() {
+    line_segments.append(x_line);
+    x_line = NULL;
+    line_segments.append(y_line);
+    y_line = NULL;
 }
 //END
 

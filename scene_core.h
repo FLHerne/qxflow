@@ -7,7 +7,7 @@
 class LinkNodeItem : public QGraphicsEllipseItem {
 public:
     LinkNodeItem(int in_x, int in_y, QGraphicsItem* parent);
-    QPoint gridSnapOffset() const;
+    QPointF gridSnapOffset() const;
     void setCenterPos(const QPointF& pos);
     virtual void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget = 0);
     enum { Type = UserType + 101 };
@@ -16,11 +16,19 @@ protected:
     virtual void mousePressEvent(QGraphicsSceneMouseEvent* event);
     virtual void mouseMoveEvent(QGraphicsSceneMouseEvent* event);
     virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent* event);
+    virtual void wheelEvent(QGraphicsSceneWheelEvent* event);
+    virtual QVariant itemChange(GraphicsItemChange change, const QVariant& value);
 private:
     //Center of the item in scene coords. Will break if scaled.
     //TODO: Make it work when scaled!
     QPointF sceneCenter() const { return scenePos() + QPointF(radius, radius); }
+    void drawCursorLine(const QPointF& to_point);
+    void endCursorLine();
     static constexpr float radius = 4.5;
+    bool x_first = true;
+    int grid_size = 0;
+    bool drawing = false;
+    QGraphicsLineItem* x_line = NULL, *y_line = NULL;
     QLinkedList<QGraphicsLineItem*> line_segments;
     QPointF last_corner;
 };
