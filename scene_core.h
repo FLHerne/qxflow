@@ -2,7 +2,7 @@
 #define SCENE_CORE_H
 
 #include <QtGui>
-#include <QtXml>
+#include <QDomElement>
 
 int roundTo(float in_val, int step);
 
@@ -43,17 +43,6 @@ private:
     mutable bool shape_outdated = false;
     QList<LinkNodeItem*> link_nodes;
     QPointF prev_pos;
-};
-
-class ElevProxyWidget : public QGraphicsProxyWidget {
-    Q_OBJECT
-public:
-    using QGraphicsProxyWidget::QGraphicsProxyWidget;
-protected:
-    virtual void hoverEnterEvent( QGraphicsSceneHoverEvent* event);
-    virtual void hoverLeaveEvent( QGraphicsSceneHoverEvent* event);
-private:
-    QLinkedList<QPair<QGraphicsItem*, qreal>> old_z;
 };
 
 #endif // SCENE_CORE_H

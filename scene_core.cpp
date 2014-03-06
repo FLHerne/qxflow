@@ -290,26 +290,6 @@ void BlockItem::addXmlWidgetRow(QDomElement elem) {
 
 //END
 
-//BEGIN ElevProxyWidget
-void ElevProxyWidget::hoverEnterEvent(QGraphicsSceneHoverEvent* event) {
-    QGraphicsProxyWidget::hoverEnterEvent(event);
-    QGraphicsItem* cur_item = this;
-    while (cur_item) {
-        old_z.append(QPair<QGraphicsItem*, qreal>(cur_item, cur_item->zValue()));
-        cur_item->setZValue(10);
-        cur_item = cur_item->parentItem();
-    }
-}
-
-void ElevProxyWidget::hoverLeaveEvent(QGraphicsSceneHoverEvent* event) {
-    QGraphicsProxyWidget::hoverLeaveEvent(event);
-    QPair<QGraphicsItem*, qreal> cur_pair;
-    foreach (cur_pair, old_z) {
-        if (cur_pair.first) cur_pair.first->setZValue(cur_pair.second);
-    }
-}
-//END ElevProxyWidget
-
 //BEGIN Misc
 int roundTo(float in_val, int step) {
     return std::roundf(in_val / step) * step;
