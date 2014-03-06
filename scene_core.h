@@ -4,8 +4,6 @@
 #include <QtGui>
 #include <QDomElement>
 
-int roundTo(float in_val, int step);
-
 class LinkNodeItem : public QGraphicsEllipseItem {
 public:
     LinkNodeItem(int in_x, int in_y, QGraphicsItem* parent);
@@ -14,6 +12,9 @@ public:
     enum { Type = UserType + 101 };
     virtual int type() const { return Type; }
 private:
+    //Center of the item in scene coords. Will break if scaled.
+    //TODO: Make it work when scaled!
+    QPointF sceneCenter() const { return scenePos() + QPointF(radius, radius); }
     static constexpr float radius = 4.5;
 };
 
@@ -45,4 +46,4 @@ private:
     QPointF prev_pos;
 };
 
-#endif // SCENE_CORE_H
+#endif //SCENE_CORE_H
