@@ -24,13 +24,20 @@ QPointF LinkNodeItem::gridSnapOffset() const {
 void LinkNodeItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) {
     setBrush(Qt::yellow);
     const QGraphicsItem* cur_item;
-    const LinkNodeItem* cur_node;
+    const LinkNodeItem* const_node;
+    LinkNodeItem* cur_node;
+    highlighted = false;
+    foreach (cur_node, overlapping) {
+        if (!collidesWithItem(cur_node, Qt::IntersectsItemBoundingRect)) cur_node->update();
+    }
+    overlapping.clear();
     foreach (cur_item, collidingItems(Qt::IntersectsItemBoundingRect)) {
-        if (cur_node = qgraphicsitem_cast<const LinkNodeItem*>(cur_item)) {
-            //Update any overlapping nodes, not just this one.
-            if (!cur_node->highlighted)
-                const_cast<LinkNodeItem*>(cur_node)->update();
+        if (const_node = qgraphicsitem_cast<const LinkNodeItem*>(cur_item)) {
             highlighted = true;
+            cur_node = const_cast<LinkNodeItem*>(const_node);
+            overlapping.append(cur_node);
+            //Update any overlapping nodes, not just this one.
+            if (!cur_node->highlighted) cur_node->update();
             setBrush(Qt::blue);
             break;
         }
