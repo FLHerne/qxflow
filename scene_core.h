@@ -8,14 +8,21 @@ class LinkNodeItem : public QGraphicsEllipseItem {
 public:
     LinkNodeItem(int in_x, int in_y, QGraphicsItem* parent);
     QPoint gridSnapOffset() const;
+    void setCenterPos(const QPointF& pos);
     virtual void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget = 0);
     enum { Type = UserType + 101 };
     virtual int type() const { return Type; }
+protected:
+    virtual void mousePressEvent(QGraphicsSceneMouseEvent* event);
+    virtual void mouseMoveEvent(QGraphicsSceneMouseEvent* event);
+    virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent* event);
 private:
     //Center of the item in scene coords. Will break if scaled.
     //TODO: Make it work when scaled!
     QPointF sceneCenter() const { return scenePos() + QPointF(radius, radius); }
     static constexpr float radius = 4.5;
+    QLinkedList<QGraphicsLineItem*> line_segments;
+    QPointF last_corner;
 };
 
 class BlockItem : public QGraphicsItem {
@@ -26,7 +33,7 @@ public:
     virtual QRectF boundingRect() const { return bounding_rect; }
     virtual QPainterPath shape() const;
     virtual void paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget* = 0) {
-//         painter->strokePath(shape_path, QPen(Qt::red, 4));
+        //painter->strokePath(shape_path, QPen(Qt::red, 4));
     }
     enum { Type = UserType + 102 };
     virtual int type() const { return Type; }

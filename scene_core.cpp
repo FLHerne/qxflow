@@ -4,11 +4,11 @@
 #include "scene_core.h"
 
 //BEGIN LinkNodeItem
-//Public
+//Public constructor
 LinkNodeItem::LinkNodeItem(int in_x, int in_y, QGraphicsItem* parent):
     QGraphicsEllipseItem(0, 0, radius * 2, radius * 2, parent) {
     setCacheMode(DeviceCoordinateCache);
-    setPos(in_x - radius, in_y - radius);
+    setCenterPos(QPoint(in_x, in_y));
     setZValue(1);
     setBrush(Qt::yellow);
 }
@@ -19,6 +19,10 @@ QPoint LinkNodeItem::gridSnapOffset() const {
         return QPoint(roundTo(sceneCenter().x(), chart_scene->gridSize()) - sceneCenter().x(),
                       roundTo(sceneCenter().y(), chart_scene->gridSize()) - sceneCenter().y());
     } else return QPoint();
+}
+
+void LinkNodeItem::setCenterPos(const QPointF &pos) {
+    setPos(pos - QPoint(radius, radius));
 }
 
 //Public virtual
@@ -35,6 +39,40 @@ void LinkNodeItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* opti
         }
     }
     QGraphicsEllipseItem::paint(painter, option, widget);
+}
+
+//Protected virtual
+void LinkNodeItem::mousePressEvent(QGraphicsSceneMouseEvent* event) {
+    if (event->button() == Qt::LeftButton) {
+        event->accept();
+        if (!line_segments.size()) {
+            grabMouse();
+            foreach(QWidget* view, scene()->views()) {
+                view->setMouseTracking(true);
+            }
+            last_corner = sceneCenter();
+        } else last_corner = event->scenePos();
+        line_segments.append(scene()->addLine(QLineF(last_corner, event->scenePos())));
+    }
+}
+
+//Protected virtual
+void LinkNodeItem::mouseMoveEvent(QGraphicsSceneMouseEvent* event) {
+    event->accept();
+    if (line_segments.size()) {
+        line_segments.last()->setLine(QLineF(last_corner, event->scenePos()));
+    }
+}
+
+void LinkNodeItem::mouseReleaseEvent(QGraphicsSceneMouseEvent* event) {
+    if (event->button() == Qt::RightButton) {
+        event->accept();
+        ungrabMouse();
+        foreach (QGraphicsLineItem* line, line_segments) {
+            delete line;
+        }
+        line_segments.clear();
+    }
 }
 //END
 
