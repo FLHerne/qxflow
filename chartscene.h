@@ -23,6 +23,7 @@ public slots:
 protected:
     //Paints a grid on the background, spacing from 'grid_size'.
     virtual void drawBackground(QPainter* painter, const QRectF& rect);
+    virtual void wheelEvent(QGraphicsSceneWheelEvent* event);
 private:
     //Spacing of background grid.
     int grid_size = 20;

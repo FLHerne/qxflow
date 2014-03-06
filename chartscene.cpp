@@ -60,7 +60,7 @@ bool ChartScene::addBlockItem(const QString& block_type) {
     return false;
 }
 
-//Protected
+//Protected virtual
 void ChartScene::drawBackground(QPainter* painter, const QRectF& rect) {
     QGraphicsScene::drawBackground(painter, rect);
     //Find the smallest multiple of grid_size in the displayed area,
@@ -71,4 +71,10 @@ void ChartScene::drawBackground(QPainter* painter, const QRectF& rect) {
     for (int iy = rect.top() - (int) rect.top() % grid_size; iy <= rect.bottom(); iy += grid_size) {
         painter->drawLine(rect.left(), iy, rect.right(), iy);
     }
+}
+
+//Protected virtual
+void ChartScene::wheelEvent(QGraphicsSceneWheelEvent* event) {
+    if (mouseGrabberItem()) sendEvent(mouseGrabberItem(), event);
+    else QGraphicsScene::wheelEvent(event);
 }
