@@ -5,11 +5,15 @@
 
 //BEGIN LinkNodeItem
 //Public constructor
-LinkNodeItem::LinkNodeItem(int in_x, int in_y, QGraphicsItem* parent):
+LinkNodeItem::LinkNodeItem(int in_x, int in_y, const QColor& normal, const QColor& active, QGraphicsItem* parent):
     QGraphicsEllipseItem(0, 0, radius * 2, radius * 2, parent) {
+    normal_color = normal;
+    active_color = active;
+    if (normal_color == Qt::transparent) normal_pen = Qt::NoPen;
+    setBrush(normal_color);
+    setPen(normal_pen);
     setCenterPos(QPoint(in_x, in_y));
     setZValue(1);
-    setBrush(Qt::yellow);
 }
 
 //Public
@@ -34,7 +38,8 @@ void LinkNodeItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* opti
     }
     if (highlighted != now_highlighted) {
         highlighted = now_highlighted;
-        setBrush(highlighted ? Qt::blue : Qt::yellow);
+        setBrush(highlighted ? active_color : normal_color);
+        setPen(highlighted ? QPen(): normal_pen);
     }
     QGraphicsEllipseItem::paint(painter, option, widget);
 }
@@ -109,10 +114,10 @@ void LinkNodeItem::drawCursorLine(const QPointF& to_point) {
         y_line = scene()->addLine(QLineF(corner_pos, last_corner));
     }
     for (int ix = x_line->boundingRect().left(); ix <= x_line->boundingRect().right(); ix += grid_size) {
-        new LinkNodeItem(ix, x_line->boundingRect().top(), x_line);
+        new LinkNodeItem(ix, x_line->boundingRect().top(), Qt::transparent, Qt::blue, x_line);
     }
     for (int iy = y_line->boundingRect().top(); iy <= y_line->boundingRect().bottom(); iy += grid_size) {
-        new LinkNodeItem(y_line->boundingRect().left(), iy, y_line);
+        new LinkNodeItem(y_line->boundingRect().left(), iy, Qt::transparent, Qt::blue, y_line);
     }
 }
 

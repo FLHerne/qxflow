@@ -6,7 +6,9 @@
 
 class LinkNodeItem : public QGraphicsEllipseItem {
 public:
-    LinkNodeItem(int in_x, int in_y, QGraphicsItem* parent);
+    LinkNodeItem(int in_x, int in_y, QGraphicsItem* parent):
+        LinkNodeItem(in_x, in_y, Qt::yellow, Qt::blue, parent) {}
+    LinkNodeItem(int in_x, int in_y, const QColor& normal, const QColor& active, QGraphicsItem* parent);
     QPointF gridSnapOffset() const;
     void setCenterPos(const QPointF& pos);
     virtual void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget = 0);
@@ -32,6 +34,8 @@ private:
     QGraphicsLineItem* x_line = NULL, *y_line = NULL;
     QLinkedList<QGraphicsLineItem*> line_segments;
     QPointF last_corner;
+    QColor normal_color = Qt::yellow, active_color = Qt::blue;
+    QPen normal_pen;
 };
 
 class BlockItem : public QGraphicsItem {
