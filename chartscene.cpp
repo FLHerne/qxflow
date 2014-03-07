@@ -1,6 +1,5 @@
 #include <QDebug>
 #include <QFileDialog>
-#include <QGraphicsSceneWheelEvent>
 
 #include "blockitem.h"
 #include "chartscene.h"

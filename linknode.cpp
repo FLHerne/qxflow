@@ -1,5 +1,3 @@
-#include <QGraphicsSceneMouseEvent>
-#include <QGraphicsSceneWheelEvent>
 #include <QGraphicsView>
 
 #include "chartscene.h"
@@ -24,12 +22,8 @@ LinkNodeItem::LinkNodeItem(int in_x, int in_y, const QColor& normal, const QColo
 
 //Public
 QPointF LinkNodeItem::gridSnapOffset() const {
-    if (grid_size) return roundTo(sceneCenter(), grid_size) - sceneCenter();
+    if (grid_size) return roundTo(sceneCenterPos(), grid_size) - sceneCenterPos();
     else return QPointF();
-}
-
-void LinkNodeItem::setCenterPos(const QPointF &pos) {
-    setPos(pos - QPoint(radius, radius));
 }
 
 //Public virtual
@@ -60,7 +54,7 @@ void LinkNodeItem::mousePressEvent(QGraphicsSceneMouseEvent* event) {
             foreach(QGraphicsView* view, scene()->views()) {
                 view->setMouseTracking(true);
             }
-            last_corner = sceneCenter();
+            last_corner = sceneCenterPos();
         } else {
             nextCursorLine();
             last_corner = roundTo(event->scenePos(), grid_size);
@@ -98,6 +92,7 @@ QVariant LinkNodeItem::itemChange(GraphicsItemChange change, const QVariant& val
     return QGraphicsItem::itemChange(change, value);
 }
 
+//Private
 void LinkNodeItem::drawCursorLine(const QPointF& to_point) {
     if (x_line) delete x_line;
     if (y_line) delete y_line;
@@ -121,6 +116,7 @@ void LinkNodeItem::drawCursorLine(const QPointF& to_point) {
     }
 }
 
+//Private
 void LinkNodeItem::nextCursorLine() {
     line_segments.append(x_line);
     x_line = NULL;
