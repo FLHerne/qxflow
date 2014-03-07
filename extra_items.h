@@ -4,19 +4,22 @@
 #include <QLinkedList>
 #include <QPainter>
 
+//A rounded-rectangle shape item with corner-radius 'radius'.
 class MRoundRectItem : public QGraphicsPathItem {
 public:
     MRoundRectItem(const QRectF& rect, qreal radius, QGraphicsItem* parent = 0, QGraphicsScene* scene = 0);
 };
 
+//A rhombus shape item.
 class MRhombusItem : public QGraphicsPolygonItem {
 public:
     MRhombusItem(const QRectF& rect, QGraphicsItem* parent = 0, QGraphicsScene* scene = 0);
 };
 
+//A parallelogram shape item, top corners 'skew' px right of bottom ones.
 class MPllgramItem : public QGraphicsPolygonItem {
 public:
-    MPllgramItem(const QRectF& rect, qreal slew, QGraphicsItem* parent = 0, QGraphicsScene* scene = 0);
+    MPllgramItem(const QRectF& rect, qreal skew, QGraphicsItem* parent = 0, QGraphicsScene* scene = 0);
 };
 
 //Line item that overrides scene/view antialiasing settings.

@@ -7,7 +7,7 @@
 #include "blockitem.h"
 #include "extra_items.h"
 
-//Public
+//Public constructor
 BlockItem::BlockItem(QPointF in_pos, QGraphicsItem* parent, QGraphicsScene* scene):
     QGraphicsItem(parent, scene) {
     setFlags(ItemIsMovable | ItemIsSelectable | ItemSendsScenePositionChanges);
@@ -15,6 +15,7 @@ BlockItem::BlockItem(QPointF in_pos, QGraphicsItem* parent, QGraphicsScene* scen
     gridAlign();
 }
 
+//Public constructor
 BlockItem::BlockItem(QPointF in_pos, QDomElement in_elem, QGraphicsItem* parent, QGraphicsScene* scene):
     BlockItem(in_pos, parent, scene) {
     QDomElement cur_elem = in_elem.firstChildElement();
@@ -95,10 +96,7 @@ BlockItem::BlockItem(QPointF in_pos, QDomElement in_elem, QGraphicsItem* parent,
     }
 }
 
-void BlockItem::addLinkNode(int in_x, int in_y) {
-    link_nodes.append(new LinkNodeItem(in_x, in_y, this));
-}
-
+//Public virtual
 QPainterPath BlockItem::shape() const {
     if (shape_outdated) {
         updateShape();
@@ -107,53 +105,13 @@ QPainterPath BlockItem::shape() const {
 }
 
 //Protected
-QVariant BlockItem::itemChange(QGraphicsItem::GraphicsItemChange change, const QVariant& value) {
-    switch (change) {
-    case ItemChildAddedChange: //Fall through
-    case ItemChildRemovedChange:
-        shape_outdated = true;
-        break;
-    case ItemSceneHasChanged:
-        gridAlign();
-        break;
-    case ItemScenePositionHasChanged:
-        foreach(LinkNodeItem* cur_node, link_nodes) {
-            cur_node->update();
-        }
-    }
-    return QGraphicsItem::itemChange(change, value);
-}
-
-void BlockItem::mousePressEvent(QGraphicsSceneMouseEvent* event) {
-    QGraphicsItem::mousePressEvent(event);
-    setZValue(1);
-    prev_pos = pos();
-}
-
-void BlockItem::mouseReleaseEvent(QGraphicsSceneMouseEvent* event) {
-    QGraphicsItem::mouseReleaseEvent(event);
-    gridAlign();
-    setZValue(0);
-    QGraphicsItem* cur_item;
-    QList<const QGraphicsItem*> colliding_non_nodes;
-    foreach (cur_item, collidingItems()) {
-        if (cur_item->type() == UserType + 101 || this->isAncestorOf(cur_item)) {
-            continue;
-        } else {
-            colliding_non_nodes.append(cur_item);
-        }
-    }
-    if (colliding_non_nodes.size()) {
-        setPos(prev_pos);
-    }
-}
-
 void BlockItem::gridAlign() {
     if (link_nodes.size()) {
         setPos(pos() + link_nodes[0]->gridSnapOffset());
     }
 }
 
+//Protected
 void BlockItem::updateShape(const QGraphicsItem* in_item) const {
     QPainterPath return_path;
     if (!in_item) {
@@ -176,6 +134,55 @@ void BlockItem::updateShape(const QGraphicsItem* in_item) const {
     shape_outdated = false;
 }
 
+//Protected
+void BlockItem::addLinkNode(int in_x, int in_y) {
+    link_nodes.append(new LinkNodeItem(in_x, in_y, this));
+}
+
+//Protected virtual
+void BlockItem::mousePressEvent(QGraphicsSceneMouseEvent* event) {
+    QGraphicsItem::mousePressEvent(event);
+    setZValue(1);
+    prev_pos = pos();
+}
+
+//Protected virtual
+void BlockItem::mouseReleaseEvent(QGraphicsSceneMouseEvent* event) {
+    QGraphicsItem::mouseReleaseEvent(event);
+    gridAlign();
+    setZValue(0);
+    QGraphicsItem* cur_item;
+    QList<const QGraphicsItem*> colliding_non_nodes;
+    foreach (cur_item, collidingItems()) {
+        if (cur_item->type() == UserType + 101 || this->isAncestorOf(cur_item)) {
+            continue;
+        } else {
+            colliding_non_nodes.append(cur_item);
+        }
+    }
+    if (colliding_non_nodes.size()) {
+        setPos(prev_pos);
+    }
+}
+
+//Protected virtual
+QVariant BlockItem::itemChange(QGraphicsItem::GraphicsItemChange change, const QVariant& value) {
+    switch (change) {
+    case ItemChildAddedChange: //Fall through
+    case ItemChildRemovedChange:
+        shape_outdated = true;
+        break;
+    case ItemSceneHasChanged:
+        gridAlign();
+        break;
+    case ItemScenePositionHasChanged:
+        foreach(LinkNodeItem* cur_node, link_nodes) {
+            cur_node->update();
+        }
+    }
+    return QGraphicsItem::itemChange(change, value);
+}
+
 //Private
 QVector<QPointF> BlockItem::getXmlPoints(QDomElement elem, uint num_points) {
     QVector<QPointF> points(num_points);
@@ -196,6 +203,7 @@ QVector<QPointF> BlockItem::getXmlPoints(QDomElement elem, uint num_points) {
     return points;
 }
 
+//Private
 void BlockItem::addXmlText(QDomElement elem) {
     QVector<QPointF> corners = getXmlPoints(elem, 1);
     if (corners.size()) {
@@ -234,6 +242,7 @@ void BlockItem::addXmlText(QDomElement elem) {
     } else qDebug() << "Invalid text";
 }
 
+//Private
 void BlockItem::addXmlWidgetRow(QDomElement elem) {
     QVector<QPointF> corners = getXmlPoints(elem, 2);
     if (corners.size()) {

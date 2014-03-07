@@ -98,19 +98,19 @@ void LinkNodeItem::drawCursorLine(const QPointF& to_point) {
     if (x_line) delete x_line;
     if (y_line) delete y_line;
     QPointF event_grid_pos = roundTo(to_point, grid_size);
-    //HACK - very ugly...
-    int left = last_corner.x() < event_grid_pos.x() ? last_corner.x() : event_grid_pos.x();
-    int right = last_corner.x() > event_grid_pos.x() ? last_corner.x() : event_grid_pos.x();
-    int top = last_corner.y() < event_grid_pos.y() ? last_corner.y() : event_grid_pos.y();
+    //TODO Rather clunky. Could be neater, probably.
+    int left =   last_corner.x() < event_grid_pos.x() ? last_corner.x() : event_grid_pos.x();
+    int right =  last_corner.x() > event_grid_pos.x() ? last_corner.x() : event_grid_pos.x();
+    int top =    last_corner.y() < event_grid_pos.y() ? last_corner.y() : event_grid_pos.y();
     int bottom = last_corner.y() > event_grid_pos.y() ? last_corner.y() : event_grid_pos.y();
     int ux = x_first ? event_grid_pos.x() : last_corner.x();
     int uy = x_first ? last_corner.y() : event_grid_pos.y();
-    
+
     x_line = new AliasingLineItem(left, uy, right, uy);
     scene()->addItem(x_line);
     y_line = new AliasingLineItem(ux, top, ux, bottom);
     scene()->addItem(y_line);
-    
+
     QPen pen(Qt::black, 3);
     x_line->setPen(pen);
     y_line->setPen(pen);
