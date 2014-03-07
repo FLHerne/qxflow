@@ -7,7 +7,6 @@
 //Public
 LinkNodeItem::LinkNodeItem(int in_x, int in_y, QGraphicsItem* parent):
     QGraphicsEllipseItem(0, 0, radius * 2, radius * 2, parent) {
-    setCacheMode(DeviceCoordinateCache);
     setPos(in_x - radius, in_y - radius);
     setZValue(1);
     setBrush(Qt::yellow);
@@ -22,25 +21,17 @@ QPointF LinkNodeItem::gridSnapOffset() const {
 
 //Public virtual
 void LinkNodeItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) {
-    setBrush(Qt::yellow);
     const QGraphicsItem* cur_item;
-    const LinkNodeItem* const_node;
-    LinkNodeItem* cur_node;
-    highlighted = false;
-    foreach (cur_node, overlapping) {
-        if (!collidesWithItem(cur_node, Qt::IntersectsItemBoundingRect)) cur_node->update();
-    }
-    overlapping.clear();
+    bool now_highlighted = false;
     foreach (cur_item, collidingItems(Qt::IntersectsItemBoundingRect)) {
-        if (const_node = qgraphicsitem_cast<const LinkNodeItem*>(cur_item)) {
-            highlighted = true;
-            cur_node = const_cast<LinkNodeItem*>(const_node);
-            overlapping.append(cur_node);
-            //Update any overlapping nodes, not just this one.
-            if (!cur_node->highlighted) cur_node->update();
-            setBrush(Qt::blue);
+        if (qgraphicsitem_cast<const LinkNodeItem*>(cur_item)) {
+            now_highlighted = true;
             break;
         }
+    }
+    if (highlighted != now_highlighted) {
+        highlighted = now_highlighted;
+        setBrush(highlighted ? Qt::blue : Qt::yellow);
     }
     QGraphicsEllipseItem::paint(painter, option, widget);
 }

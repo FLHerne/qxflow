@@ -17,7 +17,6 @@ private:
     //TODO: Make it work when scaled!
     QPointF sceneCenter() const { return scenePos() + QPointF(radius, radius); }
     static constexpr float radius = 4.5;
-    QLinkedList<LinkNodeItem*> overlapping;
 };
 
 class BlockItem : public QGraphicsItem {
