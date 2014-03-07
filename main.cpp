@@ -13,7 +13,7 @@ int main(int argc, char** argv) {
     
     ChartScene* m_scene = new ChartScene(-600, -300, 1200, 600);
     QGraphicsView* m_view = new QGraphicsView(m_scene);
-//     m_view->setRenderHint(QPainter::Antialiasing);
+    m_view->setRenderHint(QPainter::Antialiasing);
     m_scene->setBackgroundBrush(Qt::lightGray);
 
     QStringList arguments = app.arguments();

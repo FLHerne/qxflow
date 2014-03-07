@@ -2,6 +2,7 @@
 #define EXTRA_ITEMS_H
 #include <QGraphicsProxyWidget>
 #include <QLinkedList>
+#include <QPainter>
 
 class MRoundRectItem : public QGraphicsPathItem {
 public:
@@ -16,6 +17,16 @@ public:
 class MPllgramItem : public QGraphicsPolygonItem {
 public:
     MPllgramItem(const QRectF& rect, qreal slew, QGraphicsItem* parent = 0, QGraphicsScene* scene = 0);
+};
+
+//Line item that overrides scene/view antialiasing settings.
+class AliasingLineItem : public QGraphicsLineItem {
+public:
+    using QGraphicsLineItem::QGraphicsLineItem;
+    virtual void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget = 0) {
+        painter->setRenderHint(QPainter::Antialiasing, false);
+        QGraphicsLineItem::paint(painter, option, widget);
+    }
 };
 
 //QGraphicsProxyWidget that raises all ancestors' z-values on hover.
