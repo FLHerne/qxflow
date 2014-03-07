@@ -20,7 +20,8 @@ public:
     QPointF gridSnapOffset() const;
     
     //Position of the item's center.
-    void setCenterPos(const QPointF& pos) { setPos(pos - QPoint(radius, radius)); }
+    QPointF centerPos() const { return pos() + QPointF(radius, radius); }
+    void setCenterPos(const QPointF& pos) { setPos(pos - QPointF(radius, radius)); }
     
     //Used by qgraphicsitem_cast<> to quickly determine type.
     enum { Type = UserType + 101 };

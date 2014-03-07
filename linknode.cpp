@@ -97,22 +97,26 @@ void LinkNodeItem::drawCursorLine(const QPointF& to_point) {
     if (x_line) delete x_line;
     if (y_line) delete y_line;
     QPointF event_grid_pos = roundTo(to_point, grid_size);
-    QPointF corner_pos;
-    if (x_first) {
-        corner_pos = QPointF(event_grid_pos.x(), last_corner.y());
-        x_line = scene()->addLine(QLineF(last_corner, corner_pos));
-        y_line = scene()->addLine(QLineF(corner_pos, event_grid_pos));
-    } else {
-        corner_pos = QPointF(last_corner.x(), event_grid_pos.y());
-        x_line = scene()->addLine(QLineF(event_grid_pos, corner_pos));
-        y_line = scene()->addLine(QLineF(corner_pos, last_corner));
+    //HACK - very ugly...
+    int left = last_corner.x() < event_grid_pos.x() ? last_corner.x() : event_grid_pos.x();
+    int right = last_corner.x() > event_grid_pos.x() ? last_corner.x() : event_grid_pos.x();
+    int top = last_corner.y() < event_grid_pos.y() ? last_corner.y() : event_grid_pos.y();
+    int bottom = last_corner.y() > event_grid_pos.y() ? last_corner.y() : event_grid_pos.y();
+    int ux = x_first ? event_grid_pos.x() : last_corner.x();
+    int uy = x_first ? last_corner.y() : event_grid_pos.y();
+    
+    x_line = scene()->addLine(QLineF(left, uy, right, uy));
+    y_line = scene()->addLine(QLineF(ux, top, ux, bottom));
+    
+    QPen pen(Qt::black, 3);
+    x_line->setPen(pen);
+    y_line->setPen(pen);
+    int item_step = grid_size ? grid_size : 20;
+    for (int ix = left; ix <= right; ix += item_step) {
+        new LinkNodeItem(ix, uy, Qt::transparent, Qt::blue, x_line);
     }
-    int node_gap = grid_size ? grid_size : 20;
-    for (int ix = x_line->boundingRect().left(); ix <= x_line->boundingRect().right(); ix += node_gap) {
-        new LinkNodeItem(ix, x_line->boundingRect().top(), Qt::transparent, Qt::blue, x_line);
-    }
-    for (int iy = y_line->boundingRect().top(); iy <= y_line->boundingRect().bottom(); iy += node_gap) {
-        new LinkNodeItem(y_line->boundingRect().left(), iy, Qt::transparent, Qt::blue, y_line);
+    for (int iy = top; iy <= bottom; iy += item_step) {
+        new LinkNodeItem(ux, iy, Qt::transparent, Qt::blue, y_line);
     }
 }
 
