@@ -1,6 +1,12 @@
 #include <QApplication>
+#include <QComboBox>
+#include <QGraphicsView>
+#include <QLayout>
+#include <QToolBar>
+#include <QVBoxLayout>
+
+#include "blockitem.h"
 #include "chartscene.h"
-#include "scene_core.h"
 
 int main(int argc, char** argv) {
     QApplication app(argc, argv);

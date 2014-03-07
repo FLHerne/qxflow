@@ -1,7 +1,8 @@
 #ifndef CHARTSCENE_H
 #define CHARTSCENE_H
-#include <QGraphicsScene>
+
 #include <QDomDocument>
+#include <QGraphicsScene>
 #include <QLinkedList>
 
 //Specialised QGraphicsScene, with background grid and some BlockItem functions.
@@ -30,4 +31,5 @@ private:
     //List of XML documents containing BlockItem types.
     QLinkedList<QDomDocument> block_documents;
 };
+
 #endif //CHARTSCENE_H

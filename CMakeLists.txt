@@ -6,7 +6,7 @@ set(CMAKE_AUTOMOC ON)
 
 include_directories(${QT_INCLUDES} ${CMAKE_CURRENT_BINARY_DIR})
 
-set(qxflow_SRCS misc.cpp chartscene.cpp extra_items.cpp main.cpp scene_core.cpp)
+set(qxflow_SRCS main.cpp blockitem.cpp linknode.cpp chartscene.cpp extra_items.cpp misc.cpp)
 set(CMAKE_CXX_FLAGS "-std=c++11")
 qt4_automoc(${qxflow_SRCS})
 add_executable(qxflow ${qxflow_SRCS})

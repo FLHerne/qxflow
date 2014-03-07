@@ -1,6 +1,8 @@
 #include <QDebug>
 #include <QFileDialog>
-#include "scene_core.h"
+#include <QGraphicsSceneWheelEvent>
+
+#include "blockitem.h"
 #include "chartscene.h"
 
 //Public
