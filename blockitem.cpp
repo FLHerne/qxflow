@@ -1,6 +1,7 @@
 #include <QComboBox>
 #include <QDebug>
 #include <QGraphicsLinearLayout>
+#include <QHBoxLayout>
 #include <QLabel>
 #include <QLineEdit>
 
@@ -33,7 +34,7 @@ BlockItem::BlockItem(QPointF in_pos, QDomElement in_elem, QGraphicsItem* parent,
             if (cur_elem.hasAttribute("color"))
                 selected_pen.setColor(QColor(cur_elem.attribute("color")));
             if (cur_elem.hasAttribute("width"))
-                selected_pen.setColor(QColor(cur_elem.attribute("width")));
+                selected_pen.setWidth(cur_elem.attribute("width").toFloat());
         } else if (tag_name == "linknode") {
             QVector<QPointF> corners = getXmlPoints(cur_elem, 1);
             if (corners.size()) addLinkNode(corners[0].x(), corners[0].y());
@@ -54,7 +55,7 @@ BlockItem::BlockItem(QPointF in_pos, QDomElement in_elem, QGraphicsItem* parent,
             else qDebug() << "Invalid rhombus";
         } else if (tag_name == "pllgram") {
             QVector<QPointF> corners = getXmlPoints(cur_elem, 2);
-            float slew = cur_elem.attribute("slew").toFloat();
+            float slew = cur_elem.attribute("skew").toFloat();
             if (corners.size()) new_shape_item = new MPllgramItem(QRectF(corners[0], corners[1]), slew, this);
             else qDebug() << "Invalid pllgram";
         } else if (tag_name == "roundrect") {
@@ -246,39 +247,39 @@ void BlockItem::addXmlText(QDomElement elem) {
 void BlockItem::addXmlWidgetRow(QDomElement elem) {
     QVector<QPointF> corners = getXmlPoints(elem, 2);
     if (corners.size()) {
-        QGraphicsLinearLayout* row_layout = new QGraphicsLinearLayout;
-        row_layout->setSpacing(0);
-        row_layout->setContentsMargins(1,1,1,1);
-        row_layout->addStretch();
-        QGraphicsWidget* row_widget = new QGraphicsWidget(this);
-        row_widget->setPos(corners[0]);
-        row_widget->setMaximumSize(corners[1].x() - corners[0].x(), corners[1].y() - corners[0].y());
-        row_widget->setMinimumWidth(corners[1].x() - corners[0].x());
-        row_widget->setLayout(row_layout);
-        row_widget->setZValue(0.5);
-        QGraphicsProxyWidget* new_proxy;
+        QHBoxLayout* box_layout = new QHBoxLayout;
+        box_layout->setSpacing(0);
+        box_layout->setContentsMargins(1,1,1,1);
+        QWidget* base_widget = new QWidget;
+        base_widget->setLayout(box_layout);
+        QGraphicsProxyWidget* base_proxy = new QGraphicsProxyWidget(this);
+        base_proxy->setZValue(0.5);
+        box_layout->addStretch();
         QDomElement sub_elem = elem.firstChildElement();
         while (!sub_elem.isNull()) {
             if (sub_elem.tagName() == "palette") {
-                row_widget->setPalette(QPalette(QColor(sub_elem.attribute("button"))));
+                base_widget->setPalette(QPalette(QColor(sub_elem.attribute("button"))));
             } else if (sub_elem.tagName() == "label") {
-                new_proxy = new QGraphicsProxyWidget;
-                new_proxy->setWidget(new QLabel(sub_elem.attribute("text")));
-                row_layout->addItem(new_proxy);
+                box_layout->addWidget(new QLabel(sub_elem.attribute("text")));
             } else if (sub_elem.tagName() == "lineedit") {
-                new_proxy = new QGraphicsProxyWidget;
-                new_proxy->setWidget(new QLineEdit(sub_elem.attribute("text")));
-                row_layout->addItem(new_proxy);
+                box_layout->addWidget(new QLineEdit(sub_elem.attribute("text")));
             } else if (sub_elem.tagName() == "combobox") {
                 QComboBox* new_combobox = new QComboBox;
+                box_layout->addWidget(new_combobox);
+                if (sub_elem.attribute("editable") == "true") {
+                    new_combobox->setEditable(true);
+                    new_combobox->setInsertPolicy(QComboBox::NoInsert);
+                    box_layout->setStretchFactor(new_combobox, 100);
+                }
                 new_combobox->addItems(sub_elem.attribute("items").split(','));
-                new_proxy = new ElevProxyWidget;
-                new_proxy->setWidget(new_combobox);
-                row_layout->addItem(new_proxy);
             }
             sub_elem = sub_elem.nextSiblingElement();
         }
-        row_layout->addStretch();
+        box_layout->addStretch();
+        base_proxy->setWidget(base_widget);
+        base_proxy->setPos(corners[0]);
+        base_proxy->setMaximumSize(corners[1].x() - corners[0].x(), corners[1].y() - corners[0].y());
+        base_proxy->setMinimumWidth(corners[1].x() - corners[0].x());
     } else qDebug() << "Invalid widgetrow";
 }
 

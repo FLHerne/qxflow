@@ -13,7 +13,7 @@
       <font size="18" />
     </text>
   </block>
-  
+
   <block name="Stop">
     <pen color="darkgreen" />
     <linknode p1="0, 0" />
@@ -27,7 +27,7 @@
       <font size="18" />
     </text>
   </block>
-  
+
   <block name="If">
     <pen color="magenta" />
     <linknode p1="0, 0" />
@@ -42,12 +42,31 @@
     <rhombus p1="-90, 10" p2="90, 110" >
       <brush color="plum" />
     </rhombus>
-    <widgetrow p1="-75,50" p2="75,70" >
+    <widgetrow p1="-68,48" p2="68,90" >
       <palette button="plum" />
       <label text="if " />
       <combobox items="S0,S1,S2,S3" />
       <combobox items="=,&lt;,&gt;" />
       <combobox items="S0,S1,S2,S3" />
+    </widgetrow>
+  </block>
+
+  <block name="Let">
+    <pen color="saddlebrown" width="4" />
+    <linknode p1="0, 0" />
+    <linknode p1="0, 80" />
+    <line p1="0, 4" p2="0, 76" >
+      <pen width="3" />
+    </line>
+    <rect p1="-70, 10" p2="70, 70">
+      <brush color="tan" />
+    </rect>
+    <widgetrow p1="-68,30" p2="68,60" >
+      <palette button="tan" />
+      <label text="let " />
+      <combobox items="S0,S1,S2,S3" />
+      <label text=" = " />
+      <combobox items="S0,S1,S2,S3" editable="true" />
     </widgetrow>
   </block>
 </blocks>
