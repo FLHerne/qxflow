@@ -28,7 +28,7 @@ public:
     virtual QRectF boundingRect() const { return bounding_rect; }
     virtual QPainterPath shape() const;
     virtual void paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget* = 0) {
-//         painter->strokePath(shape_path, QPen(Qt::red, 4));
+        if (isSelected()) painter->strokePath(shape_path, selected_pen);
     }
     enum { Type = UserType + 102 };
     virtual int type() const { return Type; }
@@ -39,6 +39,7 @@ protected:
     void gridAlign();
     void updateShape(const QGraphicsItem* in_item = 0) const;
 private:
+    QPen selected_pen = QPen(Qt::black, 3);
     QVector<QPointF> getXmlPoints(QDomElement elem, uint num_points);
     void addXmlText(QDomElement elem);
     void addXmlWidgetRow(QDomElement elem);

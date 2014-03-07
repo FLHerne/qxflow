@@ -50,7 +50,7 @@ void LinkNodeItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* opti
 //Public
 BlockItem::BlockItem(QPointF in_pos, QGraphicsItem* parent, QGraphicsScene* scene):
     QGraphicsItem(parent, scene) {
-    setFlags(ItemIsMovable | ItemIsSelectable | ItemSendsScenePositionChanges | ItemHasNoContents);
+    setFlags(ItemIsMovable | ItemIsSelectable | ItemSendsScenePositionChanges);
     setPos(in_pos);
     gridAlign();
 }
@@ -68,7 +68,12 @@ BlockItem::BlockItem(QPointF in_pos, QDomElement in_elem, QGraphicsItem* parent,
         new_line_item = NULL;
         new_shape_item = NULL;
         tag_name = cur_elem.tagName();
-        if (tag_name == "linknode") {
+        if (tag_name == "pen") {
+            if (cur_elem.hasAttribute("color"))
+                selected_pen.setColor(QColor(cur_elem.attribute("color")));
+            if (cur_elem.hasAttribute("width"))
+                selected_pen.setColor(QColor(cur_elem.attribute("width")));
+        } else if (tag_name == "linknode") {
             QVector<QPointF> corners = getXmlPoints(cur_elem, 1);
             if (corners.size()) addLinkNode(corners[0].x(), corners[0].y());
             else qDebug() << "Invalid linknode";
