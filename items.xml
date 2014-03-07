@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <blocks>
   <block name="Start">
+    <pen color="darkgreen" />
     <linknode p1="0, 0" />
     <line p1="0, -4" p2="0,-12" >
       <pen width="3" />
@@ -14,6 +15,7 @@
   </block>
   
   <block name="Stop">
+    <pen color="darkgreen" />
     <linknode p1="0, 0" />
     <line p1="0, 4" p2="0, 12" >
       <pen width="3" />
@@ -27,6 +29,7 @@
   </block>
   
   <block name="If">
+    <pen color="magenta" />
     <linknode p1="0, 0" />
     <linknode p1="0, 120" />
     <linknode p1="100, 60" />
@@ -39,7 +42,7 @@
     <rhombus p1="-90, 10" p2="90, 110" >
       <brush color="plum" />
     </rhombus>
-    <widgetrow p1="-80,50" p2="80,70" >
+    <widgetrow p1="-75,50" p2="75,70" >
       <palette button="plum" />
       <label text="if " />
       <combobox items="S0,S1,S2,S3" />

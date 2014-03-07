@@ -27,13 +27,20 @@ void LinkNodeItem::setCenterPos(const QPointF &pos) {
 void LinkNodeItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) {
     setBrush(Qt::yellow);
     const QGraphicsItem* cur_item;
-    const LinkNodeItem* cur_node;
+    const LinkNodeItem* const_node;
+    LinkNodeItem* cur_node;
+    highlighted = false;
+    foreach (cur_node, overlapping) {
+        if (!collidesWithItem(cur_node, Qt::IntersectsItemBoundingRect)) cur_node->update();
+    }
+    overlapping.clear();
     foreach (cur_item, collidingItems(Qt::IntersectsItemBoundingRect)) {
-        if (cur_node = qgraphicsitem_cast<const LinkNodeItem*>(cur_item)) {
-            //Update any overlapping nodes, not just this one.
-            if (!cur_node->highlighted)
-                const_cast<LinkNodeItem*>(cur_node)->update();
+        if (const_node = qgraphicsitem_cast<const LinkNodeItem*>(cur_item)) {
             highlighted = true;
+            cur_node = const_cast<LinkNodeItem*>(const_node);
+            overlapping.append(cur_node);
+            //Update any overlapping nodes, not just this one.
+            if (!cur_node->highlighted) cur_node->update();
             setBrush(Qt::blue);
             break;
         }
@@ -130,7 +137,7 @@ void LinkNodeItem::nextCursorLine() {
 //Public
 BlockItem::BlockItem(QPointF in_pos, QGraphicsItem* parent, QGraphicsScene* scene):
     QGraphicsItem(parent, scene) {
-    setFlags(ItemIsMovable | ItemIsSelectable | ItemSendsScenePositionChanges | ItemHasNoContents);
+    setFlags(ItemIsMovable | ItemIsSelectable | ItemSendsScenePositionChanges);
     setPos(in_pos);
     gridAlign();
 }
@@ -148,7 +155,12 @@ BlockItem::BlockItem(QPointF in_pos, QDomElement in_elem, QGraphicsItem* parent,
         new_line_item = NULL;
         new_shape_item = NULL;
         tag_name = cur_elem.tagName();
-        if (tag_name == "linknode") {
+        if (tag_name == "pen") {
+            if (cur_elem.hasAttribute("color"))
+                selected_pen.setColor(QColor(cur_elem.attribute("color")));
+            if (cur_elem.hasAttribute("width"))
+                selected_pen.setColor(QColor(cur_elem.attribute("width")));
+        } else if (tag_name == "linknode") {
             QVector<QPointF> corners = getXmlPoints(cur_elem, 1);
             if (corners.size()) addLinkNode(corners[0].x(), corners[0].y());
             else qDebug() << "Invalid linknode";
