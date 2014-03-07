@@ -14,6 +14,11 @@ LinkNodeItem::LinkNodeItem(int in_x, int in_y, const QColor& normal, const QColo
     setPen(normal_pen);
     setCenterPos(QPoint(in_x, in_y));
     setZValue(1);
+    ChartScene* chart_scene;
+    if (scene() && (chart_scene = dynamic_cast<ChartScene*>(scene()))) {
+        grid_size = chart_scene->gridSize();
+        qDebug() << "Grid size to" << grid_size;
+    } else grid_size = 0;
 }
 
 //Public
@@ -59,6 +64,13 @@ void LinkNodeItem::mousePressEvent(QGraphicsSceneMouseEvent* event) {
             nextCursorLine();
             last_corner = roundTo(event->scenePos(), grid_size);
         }
+    } else if (event->button() == Qt::RightButton) {
+        event->accept();
+        ungrabMouse();
+        nextCursorLine();
+        //TODO: Do something with these pointers!
+        line_segments.clear();
+        drawing = false;
     }
 }
 
@@ -69,20 +81,6 @@ void LinkNodeItem::mouseMoveEvent(QGraphicsSceneMouseEvent* event) {
 }
 
 //Protected virtual
-void LinkNodeItem::mouseReleaseEvent(QGraphicsSceneMouseEvent* event) {
-    if (event->button() == Qt::RightButton) {
-        event->accept();
-        ungrabMouse();
-        nextCursorLine();
-        foreach (QGraphicsLineItem* line, line_segments) {
-            delete line;
-        }
-        line_segments.clear();
-        drawing = false;
-    }
-}
-
-//Protected virtual
 void LinkNodeItem::wheelEvent(QGraphicsSceneWheelEvent* event) {
     event->accept();
     x_first = !x_first;
@@ -90,10 +88,13 @@ void LinkNodeItem::wheelEvent(QGraphicsSceneWheelEvent* event) {
 }
 
 //Protected virtual
-QVariant LinkNodeItem::itemChange(QGraphicsItem::GraphicsItemChange change, const QVariant& value) {
-    if (change == ItemSceneHasChanged) {
-        if (ChartScene* chart_scene = dynamic_cast<ChartScene*>(scene())) {
+QVariant LinkNodeItem::itemChange(GraphicsItemChange change, const QVariant& value) {
+    qDebug() << "Got change";
+    if (change == ItemSceneChange) {
+        qDebug() << "Got scene change";
+        if (ChartScene* chart_scene = dynamic_cast<ChartScene*>(value.value<QGraphicsScene*>())) {
             grid_size = chart_scene->gridSize();
+            qDebug() << "Grid size to" << grid_size;
         } else grid_size = 0;
     }
     return QGraphicsItem::itemChange(change, value);
@@ -113,10 +114,11 @@ void LinkNodeItem::drawCursorLine(const QPointF& to_point) {
         x_line = scene()->addLine(QLineF(event_grid_pos, corner_pos));
         y_line = scene()->addLine(QLineF(corner_pos, last_corner));
     }
-    for (int ix = x_line->boundingRect().left(); ix <= x_line->boundingRect().right(); ix += grid_size) {
+    int node_gap = grid_size ? grid_size : 20;
+    for (int ix = x_line->boundingRect().left(); ix <= x_line->boundingRect().right(); ix += node_gap) {
         new LinkNodeItem(ix, x_line->boundingRect().top(), Qt::transparent, Qt::blue, x_line);
     }
-    for (int iy = y_line->boundingRect().top(); iy <= y_line->boundingRect().bottom(); iy += grid_size) {
+    for (int iy = y_line->boundingRect().top(); iy <= y_line->boundingRect().bottom(); iy += node_gap) {
         new LinkNodeItem(y_line->boundingRect().left(), iy, Qt::transparent, Qt::blue, y_line);
     }
 }
