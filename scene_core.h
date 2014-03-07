@@ -32,7 +32,6 @@ private:
     QGraphicsLineItem* x_line = NULL, *y_line = NULL;
     QLinkedList<QGraphicsLineItem*> line_segments;
     QPointF last_corner;
-    QLinkedList<LinkNodeItem*> overlapping;
 };
 
 class BlockItem : public QGraphicsItem {
