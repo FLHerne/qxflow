@@ -1,10 +1,9 @@
 #include <QGraphicsView>
 
 #include "chartscene.h"
+#include "linkline.h"
 #include "linknode.h"
 #include "misc.h"
-
-#include "linkline.h"
 
 //Public constructor
 LinkNodeItem::LinkNodeItem(int in_x, int in_y, const QColor& normal, const QColor& active, QGraphicsItem* parent):
@@ -95,7 +94,7 @@ void LinkNodeItem::wheelEvent(QGraphicsSceneWheelEvent* event) {
 //Protected virtual
 QVariant LinkNodeItem::itemChange(GraphicsItemChange change, const QVariant& value) {
     if (change == ItemSceneChange) {
-        if (ChartScene* chart_scene = dynamic_cast<ChartScene*>(value.value<QGraphicsScene*>())) {
+        if (ChartScene* chart_scene = qobject_cast<ChartScene*>(value.value<QGraphicsScene*>())) {
             grid_size = chart_scene->gridSize();
         } else grid_size = 0;
     }

@@ -8,17 +8,17 @@
 
 class LinkLineItem : public QGraphicsLineItem {
 public:
-    LinkLineItem(const QLineF& line, QGraphicsItem* parent = 0, QGraphicsScene* scene = 0);
+    LinkLineItem(const QLineF& in_line, QGraphicsItem* parent = 0);
 //Sets line rounded to grid.
-    void setLine(const QLineF& line);
+    void setLine(const QLineF& in_line);
 //Used by qgraphicsitem_cast<> to quickly determine type.
     enum { Type = UserType + 103 };
     virtual int type() const { return Type; }
 //Creates child LinkNodes where other LinkNodes overlap.
     virtual void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget = 0);
 private:
-//List of child linknodes, to avoid re-adding existing ones.
-    QLinkedList<LinkNodeItem*> nodes;
+    void updateNodes();
+    LinkNodeItem* p1_node = NULL, *p2_node = NULL;
 //Spacing of grid, if parent is a ChartScene.
     int grid_size = 20;
 //Whether line is horizontal (otherwise should be vertical).
