@@ -104,26 +104,21 @@ QVariant LinkNodeItem::itemChange(GraphicsItemChange change, const QVariant& val
 
 //Private
 void LinkNodeItem::drawCursorLine(const QPointF& to_point) {
-    if (x_line) delete x_line;
-    if (y_line) delete y_line;
+    if (line_1) delete line_1;
+    if (line_2) delete line_2;
     QPointF event_grid_pos = roundTo(to_point, grid_size);
-    //TODO Rather clunky. Could be neater, probably.
-    int left =   last_corner.x() < event_grid_pos.x() ? last_corner.x() : event_grid_pos.x();
-    int right =  last_corner.x() > event_grid_pos.x() ? last_corner.x() : event_grid_pos.x();
-    int top =    last_corner.y() < event_grid_pos.y() ? last_corner.y() : event_grid_pos.y();
-    int bottom = last_corner.y() > event_grid_pos.y() ? last_corner.y() : event_grid_pos.y();
-    int ux = x_first ? event_grid_pos.x() : last_corner.x();
-    int uy = x_first ? last_corner.y() : event_grid_pos.y();
-    x_line = new LinkLineItem(QLineF(left, uy, right, uy));
-    scene()->addItem(x_line);
-    y_line = new LinkLineItem(QLineF(ux, top, ux, bottom));
-    scene()->addItem(y_line);
+    QPointF corner_pos = (x_first ? event_grid_pos.x() : last_corner.x(),
+                          x_first ? last_corner.y() : event_grid_pos.y());
+    line_1 = new LinkLineItem(QLineF(last_corner, corner_pos));
+    scene()->addItem(line_1);
+    line_2 = new LinkLineItem(QLineF(corner_pos, event_grid_pos));
+    scene()->addItem(line_2);
 }
 
 //Private
 void LinkNodeItem::nextCursorLine() {
-    line_segments.append(x_line);
-    x_line = NULL;
-    line_segments.append(y_line);
-    y_line = NULL;
+    line_segments.append(line_1);
+    line_1 = NULL;
+    line_segments.append(line_2);
+    line_2 = NULL;
 }

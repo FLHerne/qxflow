@@ -58,7 +58,7 @@ private:
     bool drawing = false;
     bool x_first = true;
     QPointF last_corner;
-    LinkLineItem* x_line = NULL, *y_line = NULL;
+    LinkLineItem* line_1 = NULL, *line_2 = NULL;
     QLinkedList<LinkLineItem*> line_segments;
 };
 
