@@ -26,19 +26,34 @@ void LinkLineItem::setLine(const QLineF& line) {
 void LinkLineItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) {
     painter->setRenderHint(QPainter::Antialiasing, false);
     QGraphicsLineItem::paint(painter, option, widget);
+    const LinkNodeItem* cur_node;
+    bool line_node;
     auto i = nodes.begin();
     while (i != nodes.end()) {
         if (!(*i)->highlighted()) {
             delete *i;
             i = nodes.erase(i);
-        } else ++i;
+        } else {
+            line_node = true;
+            (*i)->updateConnections();
+            foreach (cur_node, (*i)->connections()) {
+                if (!cur_node->parentItem() || !qgraphicsitem_cast<LinkLineItem*>(cur_node->parentItem())) {
+                    line_node = false;
+                    break;
+                }
+            }
+            if (line_node) {
+                delete *i;
+                i = nodes.erase(i);
+            } else ++i;
+        }
     }
     QGraphicsItem* cur_item;
-    LinkNodeItem* cur_node;
     QPointF aligned, new_node_pos;
     bool node_exists;
     foreach (cur_item, collidingItems(Qt::IntersectsItemBoundingRect)) {
         if (cur_node = qgraphicsitem_cast<LinkNodeItem*>(cur_item)) {
+            if (qgraphicsitem_cast<LinkLineItem*>(cur_node->parentItem())) continue;
             aligned = roundTo(cur_node->sceneCenterPos(), grid_size);
             new_node_pos = QPointF(horizontal ? aligned.x() : line().p1().x(), horizontal ? line().p1().y() : aligned.y());
             node_exists = false;

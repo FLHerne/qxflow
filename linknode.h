@@ -28,9 +28,12 @@ public:
 //Used by qgraphicsitem_cast<> to quickly determine type.
     enum { Type = UserType + 101 };
     virtual int type() const { return Type; }
-    QList<const LinkNodeItem*> connected() const { return connected_nodes; }
+//Update connected_nodes and highlight status.
+    bool updateConnections() const;
+//List connected nodes.
+    QList<const LinkNodeItem*> connections() const { return connected_nodes; }
 //Whether item is in contact with another node.
-    bool highlighted() const { return prev_highlighted; }
+    bool highlighted() const { return node_highlighted; }
 //Paints the item - 'active_color' if overlapping another LinkNodeItem,
     //...or 'normal_color' otherwise.
     virtual void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget = 0);
@@ -43,12 +46,12 @@ private:
 //Spacing of grid, if parent is a ChartScene.
     int grid_size = 0;
 //Highlight state from last paint event.
-    bool prev_highlighted = false;
+    mutable bool node_highlighted = false;
 //For painting the item.
     QColor normal_color = Qt::yellow, active_color = Qt::blue;
     QPen normal_pen;
 //List of overlapping nodes
-    QList<const LinkNodeItem*> connected_nodes;
+    mutable QList<const LinkNodeItem*> connected_nodes;
 //Below is related to link-lines, and should go away.
     void drawCursorLine(const QPointF& to_point);
     void nextCursorLine();

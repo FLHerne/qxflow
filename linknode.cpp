@@ -28,8 +28,8 @@ QPointF LinkNodeItem::gridSnapOffset() const {
     else return QPointF();
 }
 
-//Public virtual
-void LinkNodeItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) {
+//Public
+bool LinkNodeItem::updateConnections() const {
     const QGraphicsItem* cur_item;
     const LinkNodeItem* cur_node;
     bool now_highlighted = false;
@@ -40,10 +40,16 @@ void LinkNodeItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* opti
             connected_nodes.append(cur_node);
         }
     }
-    if (prev_highlighted != now_highlighted) {
-        prev_highlighted = now_highlighted;
-        setBrush(prev_highlighted ? active_color : normal_color);
-        setPen(prev_highlighted ? QPen(): normal_pen);
+    bool highlight_changed = (now_highlighted != node_highlighted);
+    node_highlighted = now_highlighted;
+    return highlight_changed;
+}
+
+//Public virtual
+void LinkNodeItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) {
+    if (updateConnections()) {
+        setBrush(node_highlighted ? active_color : normal_color);
+        setPen(node_highlighted ? QPen(): normal_pen);
     }
     QGraphicsEllipseItem::paint(painter, option, widget);
 }
@@ -108,22 +114,10 @@ void LinkNodeItem::drawCursorLine(const QPointF& to_point) {
     int bottom = last_corner.y() > event_grid_pos.y() ? last_corner.y() : event_grid_pos.y();
     int ux = x_first ? event_grid_pos.x() : last_corner.x();
     int uy = x_first ? last_corner.y() : event_grid_pos.y();
-
     x_line = new LinkLineItem(QLineF(left, uy, right, uy));
     scene()->addItem(x_line);
     y_line = new LinkLineItem(QLineF(ux, top, ux, bottom));
     scene()->addItem(y_line);
-/*
-    QPen pen(Qt::black, 3);
-    x_line->setPen(pen);
-    y_line->setPen(pen);*//*
-    int item_step = grid_size ? grid_size : 20;
-    for (int ix = left; ix <= right; ix += item_step) {
-        new LinkNodeItem(ix, uy, Qt::transparent, Qt::blue, x_line);
-    }
-    for (int iy = top; iy <= bottom; iy += item_step) {
-        new LinkNodeItem(ux, iy, Qt::transparent, Qt::blue, y_line);
-    }*/
 }
 
 //Private
