@@ -22,16 +22,6 @@ public:
     MPllgramItem(const QRectF& rect, qreal skew, QGraphicsItem* parent = 0, QGraphicsScene* scene = 0);
 };
 
-//Line item that overrides scene/view antialiasing settings.
-class AliasingLineItem : public QGraphicsLineItem {
-public:
-    using QGraphicsLineItem::QGraphicsLineItem;
-    virtual void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget = 0) {
-        painter->setRenderHint(QPainter::Antialiasing, false);
-        QGraphicsLineItem::paint(painter, option, widget);
-    }
-};
-
 //QGraphicsProxyWidget that raises all ancestors' z-values on hover.
 //This is necessary to prevent popup menus being hidden under other items.
 class ElevProxyWidget : public QGraphicsProxyWidget {

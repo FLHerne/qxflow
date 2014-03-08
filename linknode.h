@@ -8,6 +8,8 @@
 #include <QPainter>
 #include <QPen>
 
+class LinkLineItem;
+
 class LinkNodeItem : public QGraphicsEllipseItem {
     static constexpr float radius = 4.5;
 public:
@@ -50,8 +52,8 @@ private:
     bool drawing = false;
     bool x_first = true;
     QPointF last_corner;
-    QGraphicsLineItem* x_line = NULL, *y_line = NULL;
-    QLinkedList<QGraphicsLineItem*> line_segments;
+    LinkLineItem* x_line = NULL, *y_line = NULL;
+    QLinkedList<LinkLineItem*> line_segments;
 };
 
 #endif //LINKNODE_H

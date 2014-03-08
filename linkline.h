@@ -1,6 +1,9 @@
 #ifndef LINKLINE_H
 #define LINKLINE_H
 
+#include <QGraphicsLineItem>
+#include <QLinkedList>
+
 #include "linknode.h"
 
 class LinkLineItem : public QGraphicsLineItem {

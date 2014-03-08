@@ -1,3 +1,5 @@
+#include <QDebug>
+
 #include "linkline.h"
 #include "misc.h"
 
@@ -15,11 +17,14 @@ void LinkLineItem::setLine(const QLineF& line) {
         horizontal = false;
         if (aligned.x1() != aligned.x2()) qDebug() << "Not square!";
     }
+    foreach (LinkNodeItem* node, nodes) delete node;
+    nodes.clear();
     QGraphicsLineItem::setLine(aligned);
 }
 
 //Public virtual
 void LinkLineItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) {
+    painter->setRenderHint(QPainter::Antialiasing, false);
     QGraphicsLineItem::paint(painter, option, widget);
     auto i = nodes.begin();
     while (i != nodes.end()) {
