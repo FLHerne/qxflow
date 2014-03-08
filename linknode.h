@@ -20,8 +20,13 @@ public:
 //Position of the item's center.
     QPointF centerPos() const { return pos() + QPointF(radius, radius); }
     void setCenterPos(const QPointF& pos) { setPos(pos - QPointF(radius, radius)); }
+//Center of the item in scene coords. Will break if scaled.
+    //TODO: Make it work when scaled!
+    QPointF sceneCenterPos() const { return scenePos() + QPointF(radius, radius); }
 //Used by qgraphicsitem_cast<> to quickly determine type.
     enum { Type = UserType + 101 };
+//Whether item is in contact with another node.
+    bool highlighted() { return prev_highlighted; }
     virtual int type() const { return Type; }
 //Paints the item - 'active_color' if overlapping another LinkNodeItem,
     //...or 'normal_color' otherwise.
@@ -32,13 +37,10 @@ protected:
     virtual void wheelEvent(QGraphicsSceneWheelEvent* event);
     virtual QVariant itemChange(GraphicsItemChange change, const QVariant& value);
 private:
-//Center of the item in scene coords. Will break if scaled.
-    //TODO: Make it work when scaled!
-    QPointF sceneCenterPos() const { return scenePos() + QPointF(radius, radius); }
 //Spacing of grid, if parent is a ChartScene.
     int grid_size = 0;
 //Highlight state from last paint event.
-    bool highlighted = false;
+    bool prev_highlighted = false;
 //For painting the item.
     QColor normal_color = Qt::yellow, active_color = Qt::blue;
     QPen normal_pen;

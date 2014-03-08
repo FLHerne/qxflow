@@ -37,10 +37,10 @@ void LinkNodeItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* opti
             break;
         }
     }
-    if (highlighted != now_highlighted) {
-        highlighted = now_highlighted;
-        setBrush(highlighted ? active_color : normal_color);
-        setPen(highlighted ? QPen(): normal_pen);
+    if (prev_highlighted != now_highlighted) {
+        prev_highlighted = now_highlighted;
+        setBrush(prev_highlighted ? active_color : normal_color);
+        setPen(prev_highlighted ? QPen(): normal_pen);
     }
     QGraphicsEllipseItem::paint(painter, option, widget);
 }
