@@ -107,8 +107,8 @@ void LinkNodeItem::drawCursorLine(const QPointF& to_point) {
     if (line_1) delete line_1;
     if (line_2) delete line_2;
     QPointF event_grid_pos = roundTo(to_point, grid_size);
-    QPointF corner_pos = (x_first ? event_grid_pos.x() : last_corner.x(),
-                          x_first ? last_corner.y() : event_grid_pos.y());
+    QPointF corner_pos(x_first ? event_grid_pos.x() : last_corner.x(),
+                       x_first ? last_corner.y() : event_grid_pos.y());
     if (last_corner != corner_pos) {
         line_1 = new LinkLineItem(QLineF(last_corner, corner_pos));
         scene()->addItem(line_1);
