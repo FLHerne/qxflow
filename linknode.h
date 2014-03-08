@@ -27,9 +27,10 @@ public:
     QPointF sceneCenterPos() const { return scenePos() + QPointF(radius, radius); }
 //Used by qgraphicsitem_cast<> to quickly determine type.
     enum { Type = UserType + 101 };
-//Whether item is in contact with another node.
-    bool highlighted() { return prev_highlighted; }
     virtual int type() const { return Type; }
+    QList<const LinkNodeItem*> connected() const { return connected_nodes; }
+//Whether item is in contact with another node.
+    bool highlighted() const { return prev_highlighted; }
 //Paints the item - 'active_color' if overlapping another LinkNodeItem,
     //...or 'normal_color' otherwise.
     virtual void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget = 0);
@@ -46,6 +47,8 @@ private:
 //For painting the item.
     QColor normal_color = Qt::yellow, active_color = Qt::blue;
     QPen normal_pen;
+//List of overlapping nodes
+    QList<const LinkNodeItem*> connected_nodes;
 //Below is related to link-lines, and should go away.
     void drawCursorLine(const QPointF& to_point);
     void nextCursorLine();

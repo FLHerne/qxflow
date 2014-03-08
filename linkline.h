@@ -11,6 +11,9 @@ public:
     LinkLineItem(const QLineF& line, QGraphicsItem* parent = 0, QGraphicsScene* scene = 0);
 //Sets line rounded to grid.
     void setLine(const QLineF& line);
+//Used by qgraphicsitem_cast<> to quickly determine type.
+    enum { Type = UserType + 103 };
+    virtual int type() const { return Type; }
 //Creates child LinkNodes where other LinkNodes overlap.
     virtual void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget = 0);
 private:

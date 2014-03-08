@@ -31,11 +31,13 @@ QPointF LinkNodeItem::gridSnapOffset() const {
 //Public virtual
 void LinkNodeItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) {
     const QGraphicsItem* cur_item;
+    const LinkNodeItem* cur_node;
     bool now_highlighted = false;
+    connected_nodes.clear();
     foreach (cur_item, collidingItems(Qt::IntersectsItemBoundingRect)) {
-        if (qgraphicsitem_cast<const LinkNodeItem*>(cur_item)) {
+        if (cur_node = qgraphicsitem_cast<const LinkNodeItem*>(cur_item)) {
             now_highlighted = true;
-            break;
+            connected_nodes.append(cur_node);
         }
     }
     if (prev_highlighted != now_highlighted) {
