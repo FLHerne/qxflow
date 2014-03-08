@@ -104,8 +104,14 @@ QVariant LinkNodeItem::itemChange(GraphicsItemChange change, const QVariant& val
 
 //Private
 void LinkNodeItem::drawCursorLine(const QPointF& to_point) {
-    if (line_1) delete line_1;
-    if (line_2) delete line_2;
+    if (line_1) {
+        delete line_1;
+        line_1 = NULL;
+    }
+    if (line_2) {
+        delete line_2;
+        line_2 = NULL;
+    }
     QPointF event_grid_pos = roundTo(to_point, grid_size);
     QPointF corner_pos(x_first ? event_grid_pos.x() : last_corner.x(),
                        x_first ? last_corner.y() : event_grid_pos.y());
