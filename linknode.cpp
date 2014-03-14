@@ -72,8 +72,6 @@ void LinkNodeItem::mousePressEvent(QGraphicsSceneMouseEvent* event) {
         event->accept();
         ungrabMouse();
         nextCursorLine();
-        //TODO: Do something with these pointers!
-        line_segments.clear();
         drawing = false;
     }
 }
@@ -115,19 +113,30 @@ void LinkNodeItem::drawCursorLine(const QPointF& to_point) {
     QPointF corner_pos(x_first ? event_grid_pos.x() : last_corner.x(),
                        x_first ? last_corner.y() : event_grid_pos.y());
     if (last_corner != corner_pos) {
-        line_1 = new LinkLineItem(QLineF(last_corner, corner_pos));
+        line_1 = new QGraphicsLineItem(QLineF(last_corner, corner_pos));
+        line_1->setPen(QPen(Qt::black, 2));
         scene()->addItem(line_1);
     }
     if (corner_pos != event_grid_pos) {
-        line_2 = new LinkLineItem(QLineF(corner_pos, event_grid_pos));
+        line_2 = new QGraphicsLineItem(QLineF(corner_pos, event_grid_pos));
+        line_2->setPen(QPen(Qt::black, 2));
         scene()->addItem(line_2);
     }
 }
 
 //Private
 void LinkNodeItem::nextCursorLine() {
-    line_segments.append(line_1);
-    line_1 = NULL;
-    line_segments.append(line_2);
-    line_2 = NULL;
+    LinkLineItem* new_line;
+    if (line_1) {
+        new_line = new LinkLineItem(line_1->line());
+        scene()->addItem(new_line);
+        delete line_1;
+        line_1 = NULL;
+    }
+    if (line_2) {
+        new_line = new LinkLineItem(line_2->line());
+        scene()->addItem(new_line);
+        delete line_2;
+        line_2 = NULL;
+    }
 }
