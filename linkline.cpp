@@ -47,8 +47,6 @@ void LinkLineItem::updateNodes() {
     foreach(cur_item, collidingItems()) {
         if (isAncestorOf(cur_item))
             continue;
-        if (cur_item->parentItem() && qgraphicsitem_cast<LinkLineItem*>(cur_item->parentItem()))
-            continue;
         if (cur_node = qgraphicsitem_cast<const LinkNodeItem*>(cur_item)) {
             aligned = roundTo(cur_node->sceneCenterPos(), grid_size);
             new_node_pos = QPointF(horizontal ? aligned.x() : line().p1().x(), horizontal ? line().p1().y() : aligned.y());
@@ -56,6 +54,7 @@ void LinkLineItem::updateNodes() {
                 continue;
             scene()->addItem(new LinkLineItem(QLineF(new_node_pos, line().p2())));
             setLine(QLineF(line().p1(),new_node_pos));
+            break;
         }
     }
 }
