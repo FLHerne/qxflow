@@ -44,7 +44,7 @@ void LinkLineItem::updateNodes() {
     const QGraphicsItem* cur_item;
     const LinkNodeItem* cur_node;
     QPointF aligned, new_node_pos;
-    foreach(cur_item, collidingItems()) {
+    foreach (cur_item, collidingItems()) {
         if (isAncestorOf(cur_item))
             continue;
         if (cur_node = qgraphicsitem_cast<const LinkNodeItem*>(cur_item)) {

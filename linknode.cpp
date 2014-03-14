@@ -72,6 +72,7 @@ void LinkNodeItem::mousePressEvent(QGraphicsSceneMouseEvent* event) {
         event->accept();
         ungrabMouse();
         nextCursorLine();
+        line_segments.clear();
         drawing = false;
     }
 }
@@ -126,16 +127,15 @@ void LinkNodeItem::drawCursorLine(const QPointF& to_point) {
 
 //Private
 void LinkNodeItem::nextCursorLine() {
-    LinkLineItem* new_line;
     if (line_1) {
-        new_line = new LinkLineItem(line_1->line());
-        scene()->addItem(new_line);
+        line_segments.append(new LinkLineItem(line_1->line()));
+        scene()->addItem(line_segments.back());
         delete line_1;
         line_1 = NULL;
     }
     if (line_2) {
-        new_line = new LinkLineItem(line_2->line());
-        scene()->addItem(new_line);
+        line_segments.append(new LinkLineItem(line_2->line()));
+        scene()->addItem(line_segments.back());
         delete line_2;
         line_2 = NULL;
     }
