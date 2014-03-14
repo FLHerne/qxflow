@@ -18,18 +18,13 @@ void LinkLineItem::setLine(const QLineF& in_line) {
         horizontal = false;
         if (aligned.x1() != aligned.x2()) qDebug() << "Not square!";
     }
-    if (aligned.p1() != line().p1()) {
-        if (p1_node)
-            p1_node->setCenterPos(aligned.p1());
-        else
-            p1_node = new LinkNodeItem(in_line.x1(), in_line.y1(), Qt::transparent, Qt::blue, this);
-    }
-    if (aligned.p2() != line().p2()) {
-        if (p2_node)
-            p2_node->setCenterPos(aligned.p2());
-        else
-            p2_node = new LinkNodeItem(in_line.x2(), in_line.y2(), Qt::transparent, Qt::blue, this);
-    }
+    if (!p1_node)
+        p1_node = new LinkNodeItem(aligned.x1(), aligned.y1(), Qt::transparent, Qt::blue, this);
+    else p1_node->setCenterPos(aligned.p1());
+
+    if (!p2_node)
+        p2_node = new LinkNodeItem(aligned.x1(), aligned.y1(), Qt::transparent, Qt::blue, this);
+    else p2_node->setCenterPos(aligned.p1());
     QGraphicsLineItem::setLine(aligned);
 }
 
