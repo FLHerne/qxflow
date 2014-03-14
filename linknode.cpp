@@ -114,13 +114,13 @@ void LinkNodeItem::drawCursorLine(const QPointF& to_point) {
     QPointF corner_pos(x_first ? event_grid_pos.x() : last_corner.x(),
                        x_first ? last_corner.y() : event_grid_pos.y());
     if (last_corner != corner_pos) {
-        line_1 = new QGraphicsLineItem(QLineF(last_corner, corner_pos));
-        line_1->setPen(QPen(Qt::black, 2));
+        line_1 = new AliasingLineItem(QLineF(last_corner, corner_pos));
+        line_1->setPen(QPen(Qt::black, 3));
         scene()->addItem(line_1);
     }
     if (corner_pos != event_grid_pos) {
-        line_2 = new QGraphicsLineItem(QLineF(corner_pos, event_grid_pos));
-        line_2->setPen(QPen(Qt::black, 2));
+        line_2 = new AliasingLineItem(QLineF(corner_pos, event_grid_pos));
+        line_2->setPen(QPen(Qt::black, 3));
         scene()->addItem(line_2);
     }
 }

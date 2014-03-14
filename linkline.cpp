@@ -5,9 +5,9 @@
 #include "misc.h"
 
 //Public constructor
-LinkLineItem::LinkLineItem(const QLineF& in_line, QGraphicsItem* parent): QGraphicsLineItem(parent) {
+LinkLineItem::LinkLineItem(const QLineF& in_line, QGraphicsItem* parent): AliasingLineItem(parent) {
     setLine(in_line);
-    setPen(QPen(QColor::fromHsv(qrand() % 256, 255, 190), 3));
+    setPen(QPen(Qt::black, 3));
 }
 
 //Public (hides non-virtual base)
@@ -25,14 +25,13 @@ void LinkLineItem::setLine(const QLineF& in_line) {
     if (!p2_node)
         p2_node = new LinkNodeItem(aligned.x1(), aligned.y1(), Qt::transparent, Qt::blue, this);
     else p2_node->setCenterPos(aligned.p1());
-    QGraphicsLineItem::setLine(aligned);
+    AliasingLineItem::setLine(aligned);
 }
 
 //Public virtual
 void LinkLineItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) {
     updateNodes();
-    painter->setRenderHint(QPainter::Antialiasing, false);
-    QGraphicsLineItem::paint(painter, option, widget);
+    AliasingLineItem::paint(painter, option, widget);
 }
 
 void LinkLineItem::updateNodes() {

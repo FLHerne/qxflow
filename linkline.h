@@ -4,9 +4,10 @@
 #include <QGraphicsLineItem>
 #include <QLinkedList>
 
+#include "extra_items.h"
 #include "linknode.h"
 
-class LinkLineItem : public QGraphicsLineItem {
+class LinkLineItem : public AliasingLineItem {
 public:
     LinkLineItem(const QLineF& in_line, QGraphicsItem* parent = 0);
 //Sets line rounded to grid.
