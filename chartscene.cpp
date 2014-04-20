@@ -16,7 +16,6 @@ bool ChartScene::addBlockFile(QString filename) {
         qWarning() << "Failed to open file " << filename;
         return false;
     }
-    file.open(QIODevice::ReadOnly);
     QString err_msg;
     int err_line, err_column;
     if (!doc.setContent(&file, &err_msg, &err_line, &err_column)) {
