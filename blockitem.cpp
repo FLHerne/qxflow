@@ -22,11 +22,9 @@ BlockItem::BlockItem(QPointF in_pos, QDomElement in_elem, QGraphicsItem* parent,
     QDomElement cur_elem = in_elem.firstChildElement();
     QDomElement sub_elem;
     QString tag_name;
-    QGraphicsItem* new_item;
     QGraphicsLineItem* new_line_item;
     QAbstractGraphicsShapeItem* new_shape_item;
     while (!cur_elem.isNull()) {
-        new_item = NULL;
         new_line_item = NULL;
         new_shape_item = NULL;
         tag_name = cur_elem.tagName();

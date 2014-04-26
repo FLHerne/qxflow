@@ -52,7 +52,8 @@ void LinkLineItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* opti
     QPointF aligned, new_node_pos;
     bool node_exists;
     foreach (cur_item, collidingItems(Qt::IntersectsItemBoundingRect)) {
-        if (cur_node = qgraphicsitem_cast<LinkNodeItem*>(cur_item)) {
+        cur_node = qgraphicsitem_cast<LinkNodeItem*>(cur_item);
+        if (cur_node) {
             if (qgraphicsitem_cast<LinkLineItem*>(cur_node->parentItem())) continue;
             aligned = roundTo(cur_node->sceneCenterPos(), grid_size);
             new_node_pos = QPointF(horizontal ? aligned.x() : line().p1().x(), horizontal ? line().p1().y() : aligned.y());

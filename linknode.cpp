@@ -35,7 +35,8 @@ bool LinkNodeItem::updateConnections() const {
     bool now_highlighted = false;
     connected_nodes.clear();
     foreach (cur_item, collidingItems(Qt::IntersectsItemBoundingRect)) {
-        if (cur_node = qgraphicsitem_cast<const LinkNodeItem*>(cur_item)) {
+        cur_node = qgraphicsitem_cast<const LinkNodeItem*>(cur_item);
+        if (cur_node) {
             now_highlighted = true;
             connected_nodes.append(cur_node);
         }
