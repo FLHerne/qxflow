@@ -27,6 +27,8 @@ public slots:
 protected:
 //Paints a grid on the background, spacing from 'grid_size'.
     virtual void drawBackground(QPainter* painter, const QRectF& rect);
+//Handles Key_Delete to remove items.
+    virtual void keyPressEvent(QKeyEvent* event);
 //Sends wheel events to the mouse grabber if one exists.
     virtual void wheelEvent(QGraphicsSceneWheelEvent* event);
 private:

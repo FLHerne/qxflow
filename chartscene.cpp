@@ -1,5 +1,6 @@
 #include <QDebug>
 #include <QFileDialog>
+#include <QKeyEvent>
 
 #include "blockitem.h"
 #include "chartscene.h"
@@ -71,6 +72,15 @@ void ChartScene::drawBackground(QPainter* painter, const QRectF& rect) {
     for (int iy = rect.top() - (int) rect.top() % grid_size; iy <= rect.bottom(); iy += grid_size) {
         painter->drawLine(rect.left(), iy, rect.right(), iy);
     }
+}
+
+//Protected virtual
+void ChartScene::keyPressEvent(QKeyEvent* event) {
+    if (event->key() == Qt::Key_Delete) {
+        foreach(QGraphicsItem* item, selectedItems()) {
+            delete item;
+        }
+    } else QGraphicsScene::keyPressEvent(event);
 }
 
 //Protected virtual

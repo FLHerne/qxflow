@@ -7,6 +7,7 @@
 LinkLineItem::LinkLineItem(const QLineF& line, QGraphicsItem* parent, QGraphicsScene* scene): QGraphicsLineItem(parent, scene) {
     setLine(line);
     setPen(QPen(Qt::black, 3));
+    setFlag(ItemIsSelectable);
 }
 
 //Public (hides non-virtual base)
