@@ -13,6 +13,7 @@ class BlockItem : public QGraphicsItem {
 public:
     BlockItem(QPointF in_pos, QGraphicsItem* parent = 0, QGraphicsScene* scene = 0);
     BlockItem(QPointF in_pos, QDomElement in_elem, QGraphicsItem* parent = 0, QGraphicsScene* scene = 0);
+    virtual ~BlockItem() { delete widget_style; }
 //Shape is union of descendants.
     virtual QPainterPath shape() const;
     virtual QRectF boundingRect() const { return bounding_rect; }
@@ -28,8 +29,6 @@ protected:
     void gridAlign();
 //Re-calculate shape from those of descendants.
     void updateShape(const QGraphicsItem* in_item = 0) const;
-//Add a child LinkNodeItem at (in_x, in_y).
-    void addLinkNode(int in_x, int in_y);
 //Handle movement and other events.
     virtual void mousePressEvent(QGraphicsSceneMouseEvent* event);
     virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent* event);
@@ -39,14 +38,18 @@ private:
     //Returns empty vector in case of failure.
     QVector<QPointF> getXmlPoints(QDomElement elem, uint num_points);
 //Add child items based on XML elements.
-    void addXmlText(QDomElement elem);
+    void addXmlLinkNode(QDomElement elem);
+    void addXmlPng(QDomElement elem);
+    void addXmlSvg(QDomElement elem);
     void addXmlWidgetRow(QDomElement elem);
 //Cache shape.
     mutable QPainterPath shape_path;
     mutable bool shape_outdated = false;
     mutable QRectF bounding_rect;
 //Pen to draw outline when selected.
-    QPen selected_pen = QPen(Qt::black, 3);
+    QPen selected_pen;
+//Style for widgets.
+    QStyle* widget_style;
 //List of child LinkNodes.
     QList<LinkNodeItem*> link_nodes;
 //Position at start of move event series.

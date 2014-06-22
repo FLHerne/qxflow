@@ -10,5 +10,5 @@ set(qxflow_SRCS main.cpp blockitem.cpp linknode.cpp linkline.cpp chartscene.cpp 
 set(CMAKE_CXX_FLAGS "-std=c++11")
 qt4_automoc(${qxflow_SRCS})
 add_executable(qxflow ${qxflow_SRCS})
-target_link_libraries(qxflow ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTXML_LIBRARY} )
+target_link_libraries(qxflow ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTSVG_LIBRARY} ${QT_QTXML_LIBRARY} )
 install(TARGETS qxflow RUNTIME DESTINATION bin)

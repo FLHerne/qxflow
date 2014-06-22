@@ -13,6 +13,8 @@ class LinkLineItem;
 class LinkNodeItem : public QGraphicsEllipseItem {
     static constexpr float radius = 4.5;
 public:
+    LinkNodeItem(QPoint in_pos, QGraphicsItem* parent):
+        LinkNodeItem(in_pos.x(), in_pos.y(), Qt::yellow, Qt::blue, parent) {}
     LinkNodeItem(int in_x, int in_y, QGraphicsItem* parent):
         LinkNodeItem(in_x, in_y, Qt::yellow, Qt::blue, parent) {}
     LinkNodeItem(int in_x, int in_y, const QColor& normal, const QColor& active, QGraphicsItem* parent);

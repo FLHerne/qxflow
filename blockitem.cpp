@@ -1,9 +1,12 @@
 #include <QComboBox>
 #include <QDebug>
+#include <QFileInfo>
 #include <QGraphicsLinearLayout>
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QLineEdit>
+#include <QSvgRenderer>
+#include <QWindowsStyle>
 
 #include "blockitem.h"
 #include "extra_items.h"
@@ -14,6 +17,7 @@ BlockItem::BlockItem(QPointF in_pos, QGraphicsItem* parent, QGraphicsScene* scen
     setFlags(ItemIsMovable | ItemIsSelectable | ItemSendsScenePositionChanges);
     setPos(in_pos);
     gridAlign();
+    widget_style = new QWindowsStyle;
 }
 
 //Public constructor
@@ -25,71 +29,20 @@ BlockItem::BlockItem(QPointF in_pos, QDomElement in_elem, QGraphicsItem* parent,
     QGraphicsLineItem* new_line_item;
     QAbstractGraphicsShapeItem* new_shape_item;
     while (!cur_elem.isNull()) {
-        new_line_item = NULL;
-        new_shape_item = NULL;
         tag_name = cur_elem.tagName();
         if (tag_name == "pen") {
-            if (cur_elem.hasAttribute("color"))
-                selected_pen.setColor(QColor(cur_elem.attribute("color")));
-            if (cur_elem.hasAttribute("width"))
-                selected_pen.setWidth(cur_elem.attribute("width").toFloat());
+            selected_pen.setColor(QColor(cur_elem.attribute("color", "black")));
+            selected_pen.setWidth(cur_elem.attribute("width", "3").toFloat());
+        } else if (tag_name == "png") {
+            addXmlPng(cur_elem);
+        } else if (tag_name == "svg") {
+            addXmlSvg(cur_elem);
         } else if (tag_name == "linknode") {
-            QVector<QPointF> corners = getXmlPoints(cur_elem, 1);
-            if (corners.size()) addLinkNode(corners[0].x(), corners[0].y());
-            else qDebug() << "Invalid linknode";
-        } else if (tag_name == "line") {
-            QVector<QPointF> corners = getXmlPoints(cur_elem, 2);
-            if (corners.size()) {
-                new_line_item = new QGraphicsLineItem(QLineF(corners[0], corners[1]), this);
-            }
-            else qDebug() << "Invalid line";
-        } else if (tag_name == "rect") {
-            QVector<QPointF> corners = getXmlPoints(cur_elem, 2);
-            if (corners.size()) new_shape_item = new QGraphicsRectItem(QRectF(corners[0], corners[1]), this);
-            else qDebug() << "Invalid rect";
-        } else if (tag_name == "rhombus") {
-            QVector<QPointF> corners = getXmlPoints(cur_elem, 2);
-            if (corners.size()) new_shape_item = new MRhombusItem(QRectF(corners[0], corners[1]), this);
-            else qDebug() << "Invalid rhombus";
-        } else if (tag_name == "pllgram") {
-            QVector<QPointF> corners = getXmlPoints(cur_elem, 2);
-            float slew = cur_elem.attribute("skew").toFloat();
-            if (corners.size()) new_shape_item = new MPllgramItem(QRectF(corners[0], corners[1]), slew, this);
-            else qDebug() << "Invalid pllgram";
-        } else if (tag_name == "roundrect") {
-            QVector<QPointF> corners = getXmlPoints(cur_elem, 2);
-            float radius = cur_elem.attribute("radius").toFloat();
-            if (corners.size()) new_shape_item = new MRoundRectItem(QRectF(corners[0], corners[1]), radius, this);
-            else qDebug() << "Invalid roundrect";
-        } else if (tag_name == "poly") {
-            QVector<QPointF> corners = getXmlPoints(cur_elem, cur_elem.attributes().length());
-            if (corners.size()) new_shape_item = new QGraphicsPolygonItem(corners, this);
-            else qDebug() << "Invalid poly";
-        } else if (tag_name == "text") {
-            addXmlText(cur_elem);
+            addXmlLinkNode(cur_elem);
         } else if (tag_name == "widgetrow") {
             addXmlWidgetRow(cur_elem);
         } else {
-            qDebug() << "Not a thing!";
-        }
-        QPen pen;
-        QBrush brush;
-        sub_elem = cur_elem.firstChildElement("pen");
-        if (!sub_elem.isNull()) {
-            if (sub_elem.hasAttribute("color"))
-                pen.setColor(QColor(sub_elem.attribute("color")));
-            if (sub_elem.hasAttribute("width"))
-                pen.setWidthF(sub_elem.attribute("width").toFloat());
-            if (new_line_item) new_line_item->setPen(pen);
-            if (new_shape_item) new_shape_item->setPen(pen);
-        }
-        sub_elem = cur_elem.firstChildElement("brush");
-        if (!sub_elem.isNull()) {
-            if (sub_elem.hasAttribute("color")) {
-                brush.setColor(QColor(sub_elem.attribute("color")));
-                brush.setStyle(Qt::SolidPattern);
-            }
-            if (new_shape_item) new_shape_item->setBrush(brush);
+            qDebug() << "Unknown unit type" << tag_name;
         }
         cur_elem = cur_elem.nextSiblingElement();
     }
@@ -131,11 +84,6 @@ void BlockItem::updateShape(const QGraphicsItem* in_item) const {
     }
     bounding_rect = shape_path.boundingRect();
     shape_outdated = false;
-}
-
-//Protected
-void BlockItem::addLinkNode(int in_x, int in_y) {
-    link_nodes.append(new LinkNodeItem(in_x, in_y, this));
 }
 
 //Protected virtual
@@ -203,42 +151,51 @@ QVector<QPointF> BlockItem::getXmlPoints(QDomElement elem, uint num_points) {
 }
 
 //Private
-void BlockItem::addXmlText(QDomElement elem) {
+void BlockItem::addXmlLinkNode(QDomElement elem) {
     QVector<QPointF> corners = getXmlPoints(elem, 1);
     if (corners.size()) {
-        QStringList font_styles;
-        QColor font_color("black");
-        int font_size = 12;
-        QDomElement sub_elem = elem.firstChildElement("font");
-        if (!sub_elem.isNull()) {
-            font_styles = sub_elem.attribute("style").split(',');
-            if (sub_elem.hasAttribute("color"))
-                font_color = QColor(sub_elem.attribute("color"));
-            if (sub_elem.hasAttribute("size"))
-                font_size = sub_elem.attribute("size").toInt();
-        }
-        QFont text_font;
-        text_font.setPixelSize(font_size);
-        if (font_styles.contains("bold")) text_font.setBold(true);
-        if (font_styles.contains("italic")) text_font.setItalic(true);
-        if (font_styles.contains("underline")) text_font.setUnderline(true);
-        QGraphicsItem* new_item;
-        if (elem.attribute("editable") == "true") {
-            QGraphicsTextItem* text_item = new QGraphicsTextItem(elem.attribute("text"), this);
-            text_item->setTextInteractionFlags(Qt::TextEditorInteraction);
-            text_item->setFont(text_font);
-            text_item->setDefaultTextColor(font_color);
-            new_item = text_item;
-        } else {
-            QGraphicsSimpleTextItem* stext_item = new QGraphicsSimpleTextItem(elem.attribute("text"), this);
-            stext_item->setFont(text_font);
-            stext_item->setBrush(font_color);
-            new_item = stext_item;
-        }
-        if (elem.attribute("centered") == "true") {
-            new_item->setPos(corners[0] - new_item->boundingRect().center());
-        } else new_item->setPos(corners[0]);
-    } else qDebug() << "Invalid text";
+        link_nodes.append(new LinkNodeItem(corners[0].toPoint(), this));
+    }
+    else qDebug() << "Invalid linknode unit";
+}
+
+//Private
+void BlockItem::addXmlPng(QDomElement elem) {
+    QString filename = elem.attribute("file");
+    QVector<QPointF> corners = getXmlPoints(elem, 1);
+    if (filename.isEmpty() || !corners.size()) {
+        qDebug() << "Invalid png unit";
+        return;
+    }
+    QFileInfo fileinfo(filename);
+    if (fileinfo.isReadable()) {
+        QPixmap pm(filename);
+        if (!pm.isNull()) {
+            QGraphicsItem* new_item = new QGraphicsPixmapItem(pm, this);
+            new_item->setPos(corners[0]);
+        } else qDebug() << "Failed to create pixmap from" << filename;
+    } else qDebug() << "File" << filename << "not readable";
+}
+
+//Private
+void BlockItem::addXmlSvg(QDomElement elem) {
+    QString filename = elem.attribute("file");
+    QVector<QPointF> corners = getXmlPoints(elem, 1);
+    if (filename.isEmpty() || !corners.size()) {
+        qDebug() << "Invalid svg unit";
+        return;
+    }
+    QFileInfo fileinfo(filename);
+    if (fileinfo.isReadable()) {
+        QSvgRenderer rdr(filename);
+        QPixmap pm(rdr.defaultSize());
+        pm.fill(Qt::transparent);
+        QPainter pntr(&pm);
+        pntr.setRenderHint(QPainter::Antialiasing);
+        rdr.render(&pntr);
+        QGraphicsItem* new_item = new QGraphicsPixmapItem(pm, this);
+        new_item->setPos(corners[0]);
+    } else qDebug() << "File" << filename << "not readable";
 }
 
 //Private
@@ -253,16 +210,19 @@ void BlockItem::addXmlWidgetRow(QDomElement elem) {
         QGraphicsProxyWidget* base_proxy = new QGraphicsProxyWidget(this);
         base_proxy->setZValue(0.5);
         box_layout->addStretch();
+        QWidget* new_widget = nullptr;
         QDomElement sub_elem = elem.firstChildElement();
         while (!sub_elem.isNull()) {
+            new_widget = nullptr;
             if (sub_elem.tagName() == "palette") {
                 base_widget->setPalette(QPalette(QColor(sub_elem.attribute("button"))));
             } else if (sub_elem.tagName() == "label") {
-                box_layout->addWidget(new QLabel(sub_elem.attribute("text")));
+                box_layout->addWidget(new_widget = new QLabel(sub_elem.attribute("text")));
             } else if (sub_elem.tagName() == "lineedit") {
-                box_layout->addWidget(new QLineEdit(sub_elem.attribute("text")));
+                box_layout->addWidget(new_widget = new QLineEdit(sub_elem.attribute("text")));
             } else if (sub_elem.tagName() == "combobox") {
                 QComboBox* new_combobox = new QComboBox;
+                new_combobox->setStyle(widget_style);
                 box_layout->addWidget(new_combobox);
                 if (sub_elem.attribute("editable") == "true") {
                     new_combobox->setEditable(true);
@@ -270,7 +230,9 @@ void BlockItem::addXmlWidgetRow(QDomElement elem) {
                     box_layout->setStretchFactor(new_combobox, 100);
                 }
                 new_combobox->addItems(sub_elem.attribute("items").split(','));
+                new_widget = new_combobox;
             }
+            if (new_widget) new_widget->setStyle(widget_style);
             sub_elem = sub_elem.nextSiblingElement();
         }
         box_layout->addStretch();
@@ -278,7 +240,7 @@ void BlockItem::addXmlWidgetRow(QDomElement elem) {
         base_proxy->setPos(corners[0]);
         base_proxy->setMaximumSize(corners[1].x() - corners[0].x(), corners[1].y() - corners[0].y());
         base_proxy->setMinimumWidth(corners[1].x() - corners[0].x());
-    } else qDebug() << "Invalid widgetrow";
+    } else qDebug() << "Invalid widgetrow unit";
 }
 
 #include "blockitem.moc"

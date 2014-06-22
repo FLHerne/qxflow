@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blocks>
+  <block name="Start">
+    <pen color="darkgreen" />
+    <linknode p1="0, 0" />
+    <svg p1="-50,-50" file="content/start.svg" />
+  </block>
+
+  <block name="Stop">
+    <pen color="darkgreen" />
+    <linknode p1="0, 0" />
+    <svg p1="-50, 0" file="content/stop.svg" />
+  </block>
+
+  <block name="If">
+    <pen color="magenta" />
+    <linknode p1="0, 0" />
+    <linknode p1="0, 120" />
+    <linknode p1="120, 60" />
+    <svg p1="-120,0" file="content/if.svg" />
+    <widgetrow p1="-68,48" p2="68,90" >
+      <palette button="plum" />
+      <label text="if " />
+      <combobox items="S0,S1,S2,S3" />
+      <combobox items="=,&lt;,&gt;" />
+      <combobox items="S0,S1,S2,S3" />
+    </widgetrow>
+  </block>
+
+  <block name="Let">
+    <pen color="saddlebrown" width="4" />
+    <linknode p1="0, 0" />
+    <linknode p1="0, 80" />
+    <svg p1="-80, 0" file="content/let.svg" />
+    <widgetrow p1="-68,30" p2="68,60" >
+      <palette button="tan" />
+      <label text="let " />
+      <combobox items="S0,S1,S2,S3" />
+      <label text=" = " />
+      <combobox items="S0,S1,S2,S3" editable="true" />
+    </widgetrow>
+  </block>
+</blocks>
