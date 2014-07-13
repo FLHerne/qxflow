@@ -242,5 +242,3 @@ void BlockItem::addXmlWidgetRow(QDomElement elem) {
         base_proxy->setMinimumWidth(corners[1].x() - corners[0].x());
     } else qDebug() << "Invalid widgetrow unit";
 }
-
-#include "blockitem.moc"

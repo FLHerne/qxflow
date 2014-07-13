@@ -6,6 +6,7 @@
 #include <QGraphicsSceneMouseEvent>
 #include <QPainter>
 #include <QPen>
+#include <QStyle>
 
 #include "linknode.h"
 
